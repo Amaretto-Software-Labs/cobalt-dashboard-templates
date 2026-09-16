@@ -20,9 +20,7 @@
     "version": 1,
     "title": "My issues",
     "description": "A focused issue queue with priority, ownership and status filters.",
-    "requiredSources": [
-      "issues"
-    ],
+    "requiredSources": ["issues"],
     "requiresComputer": false
   },
   {
@@ -30,9 +28,7 @@
     "version": 1,
     "title": "Recent errors",
     "description": "Investigate errors by service, severity and frequency.",
-    "requiredSources": [
-      "errors"
-    ],
+    "requiredSources": ["errors"],
     "requiresComputer": false
   },
   {
@@ -40,9 +36,7 @@
     "version": 1,
     "title": "Metrics",
     "description": "Explore KPIs and trends with time ranges and breakdowns.",
-    "requiredSources": [
-      "metrics"
-    ],
+    "requiredSources": ["metrics"],
     "requiresComputer": false
   },
   {
@@ -50,10 +44,7 @@
     "version": 1,
     "title": "Project overview",
     "description": "Track milestones, delivery health and project work.",
-    "requiredSources": [
-      "issues",
-      "pull_requests"
-    ],
+    "requiredSources": ["issues", "pull_requests"],
     "requiresComputer": false
   }
 ]

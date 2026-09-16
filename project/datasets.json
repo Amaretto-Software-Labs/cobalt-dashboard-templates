@@ -31,9 +31,7 @@
           }
         }
       },
-      "required": [
-        "configured"
-      ]
+      "required": ["configured"]
     },
     "refresh": {
       "mode": "manual"

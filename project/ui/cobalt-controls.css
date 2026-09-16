@@ -27,7 +27,7 @@
   text-align: center;
 }
 
-.cobalt-app-update [role='status'] {
+.cobalt-app-update [role="status"] {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
@@ -69,7 +69,10 @@
   color: var(--color-text);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
-  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast);
 }
 
 .resizable-grid-handle {
@@ -284,7 +287,11 @@
 
 .cobalt-select-trigger:hover:not(:disabled),
 .cobalt-select-trigger.is-open {
-  border-color: color-mix(in srgb, var(--color-accent) 55%, var(--color-border));
+  border-color: color-mix(
+    in srgb,
+    var(--color-accent) 55%,
+    var(--color-border)
+  );
   background: var(--color-hover);
   color: var(--color-text-bright);
 }
@@ -397,7 +404,7 @@
   padding-right: var(--spacing-xs);
 }
 
-.cobalt-select-options [role='group'] .cobalt-select-option {
+.cobalt-select-options [role="group"] .cobalt-select-option {
   padding-left: calc(var(--spacing-sm) + var(--spacing-lg));
 }
 
@@ -408,13 +415,13 @@
   background: var(--color-hover);
 }
 
-.cobalt-select-option[aria-selected='true'] {
+.cobalt-select-option[aria-selected="true"] {
   background: color-mix(in srgb, var(--color-accent) 12%, transparent);
   color: var(--color-text-bright);
   font-weight: var(--font-weight-semibold);
 }
 
-.cobalt-select-option[aria-selected='true'] > svg:last-child {
+.cobalt-select-option[aria-selected="true"] > svg:last-child {
   flex: 0 0 auto;
   color: var(--color-accent);
 }
@@ -440,7 +447,7 @@
     background var(--transition-fast);
 }
 
-.cobalt-toggle-track[aria-checked='true'] {
+.cobalt-toggle-track[aria-checked="true"] {
   border-color: var(--color-accent);
   background: var(--color-accent);
 }
@@ -462,7 +469,7 @@
     transform var(--transition-fast);
 }
 
-.cobalt-toggle-track[aria-checked='true'] .cobalt-toggle-thumb {
+.cobalt-toggle-track[aria-checked="true"] .cobalt-toggle-thumb {
   background: var(--color-accent-contrast);
   transform: translateX(16px);
 }

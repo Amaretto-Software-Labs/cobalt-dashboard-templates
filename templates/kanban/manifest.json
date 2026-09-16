@@ -2,12 +2,8 @@
   "version": 1,
   "sourceTree": {
     "html": "dist/index.html",
-    "styles": [
-      "dist/dashboard.css"
-    ],
-    "scripts": [
-      "dist/dashboard.js"
-    ]
+    "styles": ["dist/dashboard.css"],
+    "scripts": ["dist/dashboard.js"]
   },
   "collections": [
     {
@@ -33,11 +29,7 @@
             "type": "object"
           }
         },
-        "required": [
-          "recordId",
-          "expectedVersion",
-          "values"
-        ]
+        "required": ["recordId", "expectedVersion", "values"]
       }
     },
     {
@@ -58,10 +50,7 @@
             "type": "object"
           }
         },
-        "required": [
-          "recordId",
-          "expectedVersion"
-        ]
+        "required": ["recordId", "expectedVersion"]
       }
     }
   ]
