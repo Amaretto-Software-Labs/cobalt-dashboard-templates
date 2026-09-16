@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "sourceTree": {
+    "html": "dist/index.html",
+    "styles": [
+      "dist/dashboard.css"
+    ],
+    "scripts": [
+      "dist/dashboard.js"
+    ]
+  },
+  "collections": [
+    {
+      "key": "cards"
+    }
+  ],
+  "actions": [
+    {
+      "key": "save-card",
+      "label": "Save card",
+      "kind": "record_upsert",
+      "collection": "cards",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "recordId": {
+            "type": "string"
+          },
+          "expectedVersion": {
+            "type": "integer"
+          },
+          "values": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "recordId",
+          "expectedVersion",
+          "values"
+        ]
+      }
+    },
+    {
+      "key": "delete-card",
+      "label": "Delete card",
+      "kind": "record_delete",
+      "collection": "cards",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "recordId": {
+            "type": "string"
+          },
+          "expectedVersion": {
+            "type": "integer"
+          },
+          "values": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "recordId",
+          "expectedVersion"
+        ]
+      }
+    }
+  ]
+}

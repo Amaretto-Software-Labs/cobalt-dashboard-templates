@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "sourceTree": {
+    "html": "dist/index.html",
+    "styles": [
+      "dist/dashboard.css"
+    ],
+    "scripts": [
+      "dist/dashboard.js"
+    ]
+  },
+  "collections": [],
+  "actions": []
+}

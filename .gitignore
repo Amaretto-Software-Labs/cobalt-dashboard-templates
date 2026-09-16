@@ -1,0 +1,5 @@
+node_modules/
+dist/
+.cobalt/
+coverage/
+.DS_Store

@@ -1,0 +1,28 @@
+{
+  "name": "cobalt-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "tsc --noEmit && vite build",
+    "package": "node scripts/package.mjs",
+    "test": "vitest run",
+    "template:rebase": "node scripts/rebase-template.mjs"
+  },
+  "dependencies": {
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "lucide-react": "^1.37.0"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.5",
+    "@vitejs/plugin-react": "^6.1.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.2",
+    "vitest": "^4.1.11",
+    "jsdom": "^30.0.1",
+    "@testing-library/react": "^16.3.3"
+  }
+}

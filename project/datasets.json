@@ -1,0 +1,43 @@
+[
+  {
+    "key": "main",
+    "runtime": "javascript",
+    "script": "async function main(input, ctx) { return { configured: false, items: [], metrics: [], series: [] }; }",
+    "parametersSchema": {
+      "type": "object"
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "configured": {
+          "type": "boolean"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "metrics": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "series": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      },
+      "required": [
+        "configured"
+      ]
+    },
+    "refresh": {
+      "mode": "manual"
+    },
+    "sourceAliases": []
+  }
+]

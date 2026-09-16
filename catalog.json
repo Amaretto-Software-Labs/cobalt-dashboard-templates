@@ -1,0 +1,59 @@
+[
+  {
+    "key": "blank",
+    "version": 1,
+    "title": "Blank canvas",
+    "description": "Build a custom React dashboard using Cobalt components.",
+    "requiredSources": [],
+    "requiresComputer": false
+  },
+  {
+    "key": "kanban",
+    "version": 1,
+    "title": "Kanban",
+    "description": "Search, filter and organize work with a board and card details.",
+    "requiredSources": [],
+    "requiresComputer": false
+  },
+  {
+    "key": "my-issues",
+    "version": 1,
+    "title": "My issues",
+    "description": "A focused issue queue with priority, ownership and status filters.",
+    "requiredSources": [
+      "issues"
+    ],
+    "requiresComputer": false
+  },
+  {
+    "key": "recent-errors",
+    "version": 1,
+    "title": "Recent errors",
+    "description": "Investigate errors by service, severity and frequency.",
+    "requiredSources": [
+      "errors"
+    ],
+    "requiresComputer": false
+  },
+  {
+    "key": "metrics",
+    "version": 1,
+    "title": "Metrics",
+    "description": "Explore KPIs and trends with time ranges and breakdowns.",
+    "requiredSources": [
+      "metrics"
+    ],
+    "requiresComputer": false
+  },
+  {
+    "key": "project-details",
+    "version": 1,
+    "title": "Project overview",
+    "description": "Track milestones, delivery health and project work.",
+    "requiredSources": [
+      "issues",
+      "pull_requests"
+    ],
+    "requiresComputer": false
+  }
+]

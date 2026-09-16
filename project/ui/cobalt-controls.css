@@ -1,0 +1,475 @@
+/* Published from cobalt-code/packages/cobalt-app-ui/src/styles.css. Update with scripts/sync-ui.mjs. */
+.cobalt-app-frame {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+}
+
+.cobalt-app-content {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+.cobalt-app-update {
+  display: flex;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-bottom: 1px solid var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 12%, var(--color-panel));
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  text-align: center;
+}
+
+.cobalt-app-update [role='status'] {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  column-gap: var(--spacing-md);
+}
+
+.cobalt-app-update p {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.cobalt-app-update .cobalt-button {
+  flex-shrink: 0;
+  padding-inline: var(--spacing-md);
+}
+
+.cobalt-app-update .cobalt-button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.cobalt-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-panel-muted);
+}
+
+.cobalt-button,
+.cobalt-icon-button {
+  display: inline-flex;
+  min-height: var(--height-button);
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-panel);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.resizable-grid-handle {
+  position: absolute;
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  touch-action: none;
+  user-select: none;
+}
+
+.resizable-grid-handle.is-column {
+  inset-block: 0;
+  width: 10px;
+  margin-left: -5px;
+  cursor: col-resize;
+}
+
+.resizable-grid-handle.is-row {
+  inset-inline: 0;
+  height: 10px;
+  margin-top: -5px;
+  cursor: row-resize;
+}
+
+.resizable-grid-handle:hover,
+.resizable-grid-handle:focus-visible {
+  background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  outline: 0;
+}
+
+.resizable-grid-grip {
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-accent) 55%, transparent);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.resizable-grid-handle.is-column .resizable-grid-grip {
+  width: 3px;
+  height: 36px;
+}
+
+.resizable-grid-handle.is-row .resizable-grid-grip {
+  width: 36px;
+  height: 3px;
+}
+
+.resizable-grid-handle:hover .resizable-grid-grip,
+.resizable-grid-handle:focus-visible .resizable-grid-grip {
+  opacity: 1;
+}
+
+.resizable-grid-drag-shield {
+  position: absolute;
+  z-index: 20;
+  inset: 0;
+  background: transparent;
+}
+
+.resizable-grid-drag-shield.is-columns {
+  cursor: col-resize;
+}
+
+.resizable-grid-drag-shield.is-rows {
+  cursor: row-resize;
+}
+
+.cobalt-button {
+  padding: 0 var(--spacing-md);
+}
+
+.cobalt-icon-button {
+  min-width: var(--height-button);
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+
+.cobalt-button:hover:not(:disabled),
+.cobalt-icon-button:hover:not(:disabled) {
+  background: var(--color-hover);
+  color: var(--color-text-bright);
+}
+
+.cobalt-button:focus-visible,
+.cobalt-icon-button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.cobalt-button--primary {
+  border-color: var(--color-button);
+  background: var(--color-button);
+  color: var(--color-accent-contrast);
+  font-weight: var(--font-weight-semibold);
+}
+
+.cobalt-button--primary:hover:not(:disabled) {
+  border-color: var(--color-button-hover);
+  background: var(--color-button-hover);
+  color: var(--color-accent-contrast);
+}
+
+.cobalt-button--danger {
+  border-color: color-mix(in srgb, var(--color-error) 35%, transparent);
+  color: var(--color-error);
+}
+
+.cobalt-button--danger:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--color-error) 55%, transparent);
+  background: color-mix(in srgb, var(--color-error) 10%, transparent);
+  color: var(--color-error);
+}
+
+.cobalt-danger-surface {
+  border-color: color-mix(in srgb, var(--color-error) 25%, transparent);
+  background: color-mix(in srgb, var(--color-error) 8%, transparent);
+}
+
+.cobalt-dialog-backdrop {
+  position: absolute;
+  inset: 0;
+  background: var(--color-backdrop);
+}
+
+.cobalt-dialog-shell {
+  max-height: calc(100dvh - 2rem);
+}
+
+.cobalt-dialog-shell--large {
+  height: min(760px, calc(100dvh - 2rem));
+}
+
+.cobalt-dialog-shell--medium {
+  height: min(520px, calc(100dvh - 2rem));
+}
+
+.cobalt-dialog-shell--compact {
+  height: min(360px, calc(100dvh - 2rem));
+}
+
+.cobalt-select-menu {
+  min-width: 0;
+}
+
+.cobalt-select-menu--field {
+  width: 100%;
+}
+
+.cobalt-select-trigger {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-medium);
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.cobalt-select-menu--field .cobalt-select-trigger {
+  min-height: var(--height-input);
+  padding: 0 var(--spacing-md);
+  border-color: var(--color-border);
+  background: var(--color-input);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+}
+
+.cobalt-select-menu--compact .cobalt-select-trigger {
+  height: 28px;
+  min-height: 28px;
+  padding: 0 var(--spacing-sm);
+  background: transparent;
+  font-size: var(--font-size-xs);
+}
+
+.cobalt-select-menu--icon .cobalt-select-trigger {
+  width: var(--height-button);
+  min-width: var(--height-button);
+  height: var(--height-button);
+  min-height: var(--height-button);
+  justify-content: center;
+  border: 0;
+  padding: 0;
+}
+
+.cobalt-select-trigger span {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+}
+
+.cobalt-select-trigger svg {
+  flex: 0 0 auto;
+}
+
+.cobalt-select-trigger svg:last-child {
+  transition: transform var(--transition-fast);
+}
+
+.cobalt-select-trigger:hover:not(:disabled),
+.cobalt-select-trigger.is-open {
+  border-color: color-mix(in srgb, var(--color-accent) 55%, var(--color-border));
+  background: var(--color-hover);
+  color: var(--color-text-bright);
+}
+
+.cobalt-select-trigger.is-open svg:last-child {
+  transform: rotate(180deg);
+}
+
+.cobalt-select-trigger:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-accent) 55%, transparent);
+  outline-offset: 1px;
+}
+
+.cobalt-select-trigger:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.cobalt-select-trigger.is-loading:disabled {
+  cursor: wait;
+  opacity: 1;
+}
+
+.cobalt-select-options {
+  position: fixed;
+  z-index: 1000;
+  display: grid;
+  gap: 2px;
+  overflow-y: auto;
+  padding: var(--spacing-xs);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-panel);
+  box-shadow: var(--shadow-lg);
+}
+
+.cobalt-select-search {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: block;
+  padding-bottom: var(--spacing-xs);
+  background: var(--color-panel);
+}
+
+.cobalt-select-search input {
+  width: 100%;
+  min-height: var(--height-button);
+  padding: 0 var(--spacing-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-input);
+  color: var(--color-text);
+  font-size: var(--font-size-xs);
+}
+
+.cobalt-select-search input:focus {
+  border-color: var(--color-accent);
+  outline: none;
+}
+
+.cobalt-select-group-label {
+  padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-xs);
+  color: var(--color-text-muted);
+  font-size: 0.6875rem;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.cobalt-select-empty {
+  padding: var(--spacing-md) var(--spacing-sm);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  text-align: center;
+}
+
+.cobalt-select-option {
+  display: flex;
+  min-height: var(--height-button);
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  padding: 0 var(--spacing-sm);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text);
+  font-size: var(--font-size-xs);
+  text-align: left;
+}
+
+.cobalt-select-option-row {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+}
+
+.cobalt-select-option-row .cobalt-select-option {
+  width: auto;
+  min-width: 0;
+  flex: 1;
+}
+
+.cobalt-select-option-trailing {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  padding-right: var(--spacing-xs);
+}
+
+.cobalt-select-options [role='group'] .cobalt-select-option {
+  padding-left: calc(var(--spacing-sm) + var(--spacing-lg));
+}
+
+.cobalt-select-option:hover,
+.cobalt-select-option.is-active,
+.cobalt-select-option:focus-visible {
+  outline: none;
+  background: var(--color-hover);
+}
+
+.cobalt-select-option[aria-selected='true'] {
+  background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  color: var(--color-text-bright);
+  font-weight: var(--font-weight-semibold);
+}
+
+.cobalt-select-option[aria-selected='true'] > svg:last-child {
+  flex: 0 0 auto;
+  color: var(--color-accent);
+}
+
+.cobalt-toggle {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+}
+
+.cobalt-toggle-track {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  flex: 0 0 36px;
+  padding: 2px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-input);
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast);
+}
+
+.cobalt-toggle-track[aria-checked='true'] {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+}
+
+.cobalt-toggle-track:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-accent) 55%, transparent);
+  outline-offset: 2px;
+}
+
+.cobalt-toggle-thumb {
+  display: block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--color-text-muted);
+  box-shadow: var(--shadow-sm);
+  transition:
+    background var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.cobalt-toggle-track[aria-checked='true'] .cobalt-toggle-thumb {
+  background: var(--color-accent-contrast);
+  transform: translateX(16px);
+}
+
+.cobalt-toggle-label {
+  min-width: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-tight);
+}
