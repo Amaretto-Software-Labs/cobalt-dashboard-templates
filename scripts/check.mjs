@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 const root=fileURLToPath(new URL('..',import.meta.url));
+execFileSync(process.execPath,['--test',join(root,'scripts/provenance.test.mjs')],{stdio:'inherit'});
 const templates=JSON.parse(await readFile(join(root,'catalog.json'),'utf8'));
 const temporary=await mkdtemp(join(tmpdir(),'cobalt-templates-check-'));
 try {for(const {key} of templates) {

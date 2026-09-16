@@ -4,6 +4,7 @@ import { cp, mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 const repository = fileURLToPath(new URL('..', import.meta.url));
+if (execFileSync('git', ['status', '--porcelain'], { cwd: repository, encoding: 'utf8' }).trim()) throw new Error('Check out a clean template commit before scaffolding so the starting SHA identifies the exact source.');
 const [key, destination] = process.argv.slice(2);
 const catalog = JSON.parse(await readFile(resolve(repository, 'catalog.json'), 'utf8'));
 if (!catalog.some(template => template.key === key) || !destination) throw new Error('Usage: node scripts/create.mjs <template-key> <destination>');
