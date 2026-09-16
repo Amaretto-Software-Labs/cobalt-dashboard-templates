@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "build": "tsc --noEmit && vite build",
+    "build": "tsc --noEmit && vite build && node scripts/stamp-build.mjs",
     "package": "node scripts/package.mjs",
     "test": "vitest run",
     "template:rebase": "node scripts/rebase-template.mjs"

@@ -1,4 +1,4 @@
-import { saveDiff } from './provenance.mjs';
+import { saveDiff, sourceFiles } from './provenance.mjs';
 import { readdir, readFile, writeFile, mkdir, lstat } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { resolve, relative, join } from 'node:path';
@@ -20,9 +20,12 @@ async function add(path) {
   total += text.length;
   files.push({ path: relative(root, path).split('\\').join('/'), sha256: createHash('sha256').update(text).digest('hex') });
 }
+const build=JSON.parse(await readFile('dist/build.json','utf8'));
+const current=await sourceFiles(root);
+if(Object.keys(build.sourceHashes).length!==Object.keys(current).length || Object.entries(current).some(([path,text])=>build.sourceHashes[path]!==createHash('sha256').update(text).digest('hex'))) throw new Error('Source changed after build. Run npm run build again before packaging.');
+for(const [path,sha] of Object.entries(build.artifactHashes)) if(createHash('sha256').update(await readFile(path)).digest('hex')!==sha) throw new Error('Build output changed. Rebuild before packaging.');
 await saveDiff(root);
 await mkdir('dist', { recursive: true });
-await writeFile('dist/index.html', '<div id="root"></div>');
 for (const file of ['dist/dashboard.js', 'dist/dashboard.css']) await lstat(file);
 for (const path of ['provenance.json','template-base.json','changes.patch','package.json','package-lock.json','tsconfig.json','vite.config.ts','index.html','manifest.json','datasets.json','AGENTS.md','src','ui','sdk','scripts','dist']) await add(resolve(root, path));
 if (files.length > 128 || total > 8_000_000) throw new Error('Project exceeds publication limits');
