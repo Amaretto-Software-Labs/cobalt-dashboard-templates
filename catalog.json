@@ -1,50 +1,106 @@
 [
   {
     "key": "blank",
-    "version": 1,
+    "version": 2,
     "title": "Blank canvas",
-    "description": "Build a custom React dashboard using Cobalt components.",
+    "description": "Compose a dashboard from the shared React library.",
     "requiredSources": [],
     "requiresComputer": false
   },
   {
     "key": "kanban",
-    "version": 1,
-    "title": "Kanban",
-    "description": "Search, filter and organize work with a board and card details.",
+    "version": 2,
+    "title": "My work",
+    "description": "A useful start to the day: tasks, reviews and blockers across tools.",
     "requiredSources": [],
     "requiresComputer": false
   },
   {
-    "key": "my-issues",
-    "version": 1,
-    "title": "My issues",
-    "description": "A focused issue queue with priority, ownership and status filters.",
-    "requiredSources": ["issues"],
+    "key": "review-inbox",
+    "version": 2,
+    "title": "Review inbox",
+    "description": "Make the next review obvious, with age, ownership and checks in view.",
+    "requiredSources": [],
     "requiresComputer": false
   },
   {
-    "key": "recent-errors",
-    "version": 1,
-    "title": "Recent errors",
-    "description": "Investigate errors by service, severity and frequency.",
-    "requiredSources": ["errors"],
+    "key": "release-readiness",
+    "version": 2,
+    "title": "Release readiness",
+    "description": "A single view of scope, checks, ownership and release blockers.",
+    "requiredSources": [],
     "requiresComputer": false
   },
   {
-    "key": "metrics",
-    "version": 1,
-    "title": "Metrics",
-    "description": "Explore KPIs and trends with time ranges and breakdowns.",
-    "requiredSources": ["metrics"],
+    "key": "service-health",
+    "version": 2,
+    "title": "Service health",
+    "description": "Latency, traffic and errors with the context needed to investigate.",
+    "requiredSources": [],
     "requiresComputer": false
   },
   {
-    "key": "project-details",
-    "version": 1,
-    "title": "Project overview",
-    "description": "Track milestones, delivery health and project work.",
-    "requiredSources": ["issues", "pull_requests"],
+    "key": "incident-room",
+    "version": 2,
+    "title": "Incident room",
+    "description": "Correlate the current incident across metrics, logs and recent changes.",
+    "requiredSources": [],
+    "requiresComputer": false
+  },
+  {
+    "key": "log-explorer",
+    "version": 2,
+    "title": "Log explorer",
+    "description": "Search and inspect a bounded event stream without losing your place.",
+    "requiredSources": [],
+    "requiresComputer": false
+  },
+  {
+    "key": "delivery-flow",
+    "version": 2,
+    "title": "Delivery flow",
+    "description": "Understand aging work, throughput and the points where work gets stuck.",
+    "requiredSources": [],
+    "requiresComputer": false
+  },
+  {
+    "key": "release-impact",
+    "version": 2,
+    "title": "Release impact",
+    "description": "Connect releases to changes in reliability and customer experience.",
+    "requiredSources": [],
+    "requiresComputer": false
+  },
+  {
+    "key": "cloud-cost",
+    "version": 2,
+    "title": "Cloud cost & usage",
+    "description": "Understand spend, forecast pressure and the services driving change.",
+    "requiredSources": [],
+    "requiresComputer": false
+  },
+  {
+    "key": "customer-health",
+    "version": 2,
+    "title": "Customer health",
+    "description": "Combine adoption, support and account signals into an explainable view.",
+    "requiredSources": [],
+    "requiresComputer": false
+  },
+  {
+    "key": "product-adoption",
+    "version": 2,
+    "title": "Product adoption",
+    "description": "Connect acquisition and activation to engagement and retention.",
+    "requiredSources": [],
+    "requiresComputer": false
+  },
+  {
+    "key": "workspace-briefing",
+    "version": 2,
+    "title": "Workspace briefing",
+    "description": "Compose an evidence-backed briefing from whichever sources the user chooses.",
+    "requiredSources": [],
     "requiresComputer": false
   }
 ]

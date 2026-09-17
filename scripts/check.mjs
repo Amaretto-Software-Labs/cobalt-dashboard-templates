@@ -3,7 +3,17 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import assert from "node:assert/strict";
 const root = fileURLToPath(new URL("..", import.meta.url));
+const project = join(root, "project");
+execFileSync("npm", ["ci", "--ignore-scripts"], {
+  cwd: project,
+  stdio: "inherit",
+});
+execFileSync("npm", ["run", "library:build"], {
+  cwd: project,
+  stdio: "inherit",
+});
 execFileSync(
   process.execPath,
   ["--test", join(root, "scripts/provenance.test.mjs")],
@@ -21,11 +31,10 @@ try {
   });
   execFileSync("npm", ["test"], { cwd: sdk, stdio: "inherit" });
   const [{ filename }] = JSON.parse(
-    execFileSync(
-      "npm",
-      ["pack", "--json", "--pack-destination", temporary],
-      { cwd: sdk, encoding: "utf8" },
-    ),
+    execFileSync("npm", ["pack", "--json", "--pack-destination", temporary], {
+      cwd: sdk,
+      encoding: "utf8",
+    }),
   );
   for (const { key } of templates) {
     const destination = join(temporary, key);
@@ -37,12 +46,26 @@ try {
     for (const args of [
       ["ci", "--ignore-scripts"],
       // Test the package being authored, installed from its real npm artifact.
-      ["install", "--ignore-scripts", "--save-exact", join(temporary, filename)],
+      [
+        "install",
+        "--ignore-scripts",
+        "--save-exact",
+        join(temporary, filename),
+      ],
       ["test"],
       ["run", "build"],
       ["run", "package"],
     ])
       execFileSync("npm", args, { cwd: destination, stdio: "inherit" });
+    const javascript = await readFile(
+      join(destination, "dist/dashboard.js"),
+      "utf8",
+    );
+    assert.doesNotMatch(
+      javascript,
+      /Illustrative record for the component library|cobalt-react-library-decisions|Ship dashboard preview/,
+      `${key}: library fixtures must not ship in dashboard JavaScript`,
+    );
   }
 } finally {
   await rm(temporary, { recursive: true, force: true });

@@ -1,19 +1,15 @@
 // @vitest-environment jsdom
+import "./test-setup";
 import { afterEach, expect, test, vi } from "vitest";
-import {
-  cleanup,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import Kanban from "./Kanban";
 afterEach(() => {
   cleanup();
   delete window.cobaltDashboard;
 });
-test("local card writes use the real host record contract and optimistic version", async () => {
-  const requestAction = vi.fn().mockResolvedValue({});
+test("local board writes use the real host action and current record version", async () => {
+  const action = vi.fn().mockResolvedValue({});
   window.cobaltDashboard = {
     getDataset: vi
       .fn()
@@ -25,24 +21,37 @@ test("local card writes use the real host record contract and optimistic version
           {
             recordId: "card-1",
             version: 7,
-            values: { title: "Ship dashboard", status: "To do" },
+            values: {
+              title: "Ship dashboard",
+              status: "To do",
+              position: 1000,
+            },
           },
         ],
       }),
-    requestAction,
+    requestAction: action,
   };
   render(<Kanban />);
-  const status = await screen.findByLabelText("Status for Ship dashboard");
-  fireEvent.change(status, { target: { value: "Done" } });
+  const user = userEvent.setup();
+  await user.click(
+    await screen.findByRole("combobox", { name: "Status for Ship dashboard" }),
+  );
+  await user.click(await screen.findByRole("option", { name: "Done" }));
   await waitFor(() =>
-    expect(requestAction).toHaveBeenCalledWith("save-card", {
+    expect(action).toHaveBeenCalledWith("save-card", {
       recordId: "card-1",
       expectedVersion: 7,
-      values: { id: "card-1", title: "Ship dashboard", status: "Done" },
+      values: {
+        id: "card-1",
+        title: "Ship dashboard",
+        status: "Done",
+        position: 0,
+      },
     }),
   );
 });
-test("connected boards have source details and no unsupported local mutation controls", async () => {
+test("connected boards expose source details without unsupported writes", async () => {
+  const action = vi.fn();
   window.cobaltDashboard = {
     getDataset: vi
       .fn()
@@ -59,14 +68,15 @@ test("connected boards have source details and no unsupported local mutation con
         ],
       }),
     getRecords: vi.fn(),
-    requestAction: vi.fn(),
+    requestAction: action,
   };
   render(<Kanban />);
-  await screen.findByText("Real issue");
-  expect(screen.queryByText("New card")).toBeNull();
-  expect(screen.queryByLabelText("Status for Real issue")).toBeNull();
-  fireEvent.click(screen.getByText("Real issue"));
-  expect(screen.getByText("Open source").getAttribute("href")).toBe(
-    "https://example.com/1",
-  );
+  const user = userEvent.setup();
+  await user.click(await screen.findByRole("button", { name: "Real issue" }));
+  expect(screen.queryByRole("button", { name: "New card" })).toBeNull();
+  expect(screen.queryByRole("button", { name: "Move Real issue" })).toBeNull();
+  expect(
+    screen.getByRole("link", { name: "Open source" }).getAttribute("href"),
+  ).toBe("https://example.com/1");
+  expect(action).not.toHaveBeenCalled();
 });

@@ -3,13 +3,30 @@
     "key": "main",
     "runtime": "javascript",
     "parametersSchema": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string"
+        },
+        "range": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "template": {
+          "type": "string"
+        }
+      }
     },
     "outputSchema": {
       "type": "object",
       "properties": {
         "configured": {
           "type": "boolean"
+        },
+        "mode": {
+          "enum": ["records", "connected"]
         },
         "items": {
           "type": "array",
@@ -23,16 +40,68 @@
             "type": "object"
           }
         },
-        "series": {
+        "trends": {
           "type": "array",
           "items": {
             "type": "object"
           }
+        },
+        "categories": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "bins": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "activities": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "services": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "sections": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "milestones": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "complete": {
+          "type": "boolean"
+        },
+        "gap": {
+          "type": "string"
         }
       },
-      "required": [
-        "configured"
-      ]
+      "required": ["configured"]
     },
     "refresh": {
       "mode": "manual"

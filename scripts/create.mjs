@@ -32,7 +32,7 @@ await cp(resolve(repository, "project"), target, {
   filter: (path) =>
     !path
       .split("/")
-      .some((segment) => ["node_modules", "dist", ".cobalt"].includes(segment)),
+      .some((segment) => ["node_modules", "dist", ".library-dist", "test-results", "playwright-report", ".cobalt"].includes(segment)),
 });
 await cp(resolve(repository, "templates", key), target, { recursive: true });
 const startingSha = execFileSync("git", ["rev-parse", "HEAD"], {
