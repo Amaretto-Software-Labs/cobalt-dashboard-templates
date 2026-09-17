@@ -6,6 +6,7 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync, spawn } from "node:child_process";
 import { chromium } from "@playwright/test";
+import { stripVTControlCharacters } from "node:util";
 
 const packageRoot = fileURLToPath(new URL("..", import.meta.url));
 const temporary = await mkdtemp(join(tmpdir(), "cobalt-sdk-browser-"));
@@ -36,7 +37,7 @@ async function start(command, args) {
   let output = "";
   child.stdout.on("data", data => { output += data; }); child.stderr.on("data", data => { output += data; });
   for (let attempt = 0; attempt < 100; attempt++) {
-    const match = output.match(/http:\/\/127\.0\.0\.1:(\d+)/);
+    const match = stripVTControlCharacters(output).match(/http:\/\/127\.0\.0\.1:(\d+)/);
     if (match) return match[0];
     if (child.exitCode !== null) throw new Error(output);
     await new Promise(resolve => setTimeout(resolve, 50));
