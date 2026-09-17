@@ -141,3 +141,5 @@ export function Metric({
 export function Badge({ children }: PropsWithChildren) {
   return <span className="badge">{children}</span>;
 }
+
+export { DataTable, TimeSeries, LogStream } from "./DataViews";

@@ -12,7 +12,7 @@ npm test
 npm run dev -- --port 5173
 ```
 
-Open `http://localhost:5173/?demo=1` for an explicitly labeled sample preview. Without demo mode, the app requires Cobalt's authorized data bridge. Demo code and preview theme defaults are excluded from production builds.
+Open `http://localhost:5173/?demo=1` for an explicitly labeled sample preview. Inside a Cobalt dashboard task, `npm run dev` uses the authorized live editing session automatically. Outside Cobalt, use explicit demo mode for fixtures. Demo code and preview theme defaults are excluded from production builds.
 
 ## Authoring in Cobalt
 
@@ -36,13 +36,17 @@ Later edits restore the saved source, not the latest public template. Published 
 npm run template:rebase -- <new-40-character-commit-sha> /workspace/rebased-dashboard
 ```
 
-This checks out the exact new template commit and performs a three-way merge using the saved baseline and current customizations. The original directory remains untouched. Resolve any conflicts in the output directory, inspect the result, install dependencies, test and build. Copy the resolved source back to the original Cobalt checkout (preserving `.cobalt/context.json`), package and import with the original expected version. Publication remains a separate action.
+This checks out the exact new template commit and performs a three-way merge using the saved baseline and current customizations. The original directory remains untouched. Resolve any conflicts in the output directory, inspect the result, install dependencies, test and build. Copy the resolved source back to the original Cobalt checkout (preserving `.cobalt/`, including the task editing credential), package and import with the original expected version. Publication remains a separate action.
 
 ## Components and data
 
 `project/ui` contains shared React controls, layouts, board and table components. Control styles are published from Cobalt's actual `cobalt-app-ui` package; `scripts/sync-ui.mjs /path/to/cobalt-code` updates them. Production inherits the shell's CSS tokens; preview defaults come from the same Cobalt theme source.
 
-`project/sdk` provides the typed host bridge and data-loading hook. Data source selection is explicit. Templates never assume a Kanban must use local cards: use connected data for tasks/issues or configure local dashboard records when requested. Connected source mutations are not currently supported by Cobalt; use source links instead of nonfunctional write controls.
+`@cobalt-code/dashboard` provides the typed host bridge and data-loading hooks as a public npm package. Templates pin its version and lockfile; `npm ci` installs it and the production build bundles it. SDK source, tests, and release instructions live in `packages/dashboard`. Version 0.2.0 provides the Cobalt viewer bridge, Vite live editing transport, automatic dataset synchronization, and a CLI dataset runner. `datasets.json` references scripts in `datasets/`; `source-bindings.json` stores authorized source definitions. `npm run dataset:test -- main --params '{}'` runs current scripts against real data. `npm run preview` serves the saved build and rejects source changes made since building. Browser code never selects a draft version. Data source selection is explicit. Templates never assume a Kanban must use local cards: use connected data for tasks/issues or configure local dashboard records when requested. Connected source mutations are not currently supported by Cobalt; use source links instead of nonfunctional write controls.
+
+Use `useDataset<T>` for arbitrary typed JSON and `useLiveDataset<T>` for incremental feeds. The live hook polls without overlapping requests, backs off on failure, retains visibly stale results and stops scheduling on unmount. `DataTable` supports explicit partial results, continuation and detail callbacks; `TimeSeries` accepts timestamp/value observations with units; `LogStream` provides filtering, time filtering, display pause and follow-tail. These use the same shared controls and inherited tokens. Pausing the display continues collection; closing the component stops it. Live feeds use bounded incremental polling, not transport-level push events.
+
+Discover native, provider and MCP capabilities through Cobalt, then inspect their schemas and probe actual data before mapping results. Native PRs/tasks, deployment metrics, analytics and logs use the same bridge. Keep units, time windows, observed timestamps, continuation and partial-source failures explicit; never turn a failed source into a zero metric. Stream scripts return `{events, checkpoint, complete, gap?}` and receive the previous `input.checkpoint`; Cobalt persists the bounded event window per viewer, revision and query.
 
 `catalog.json` is the product catalog. Add a template directory, metadata entry and validation before merging changes to main. Cobalt caches the catalog for five minutes and records the exact commit for each instantiated template.
 

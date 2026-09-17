@@ -1,7 +1,8 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import { cobaltDashboard } from "@cobalt-code/dashboard/vite";
 export default defineConfig(({ command }) => ({
-  plugins: [react()],
+  plugins: [react(), cobaltDashboard()],
   define:
     command === "build"
       ? { "process.env.NODE_ENV": JSON.stringify("production") }

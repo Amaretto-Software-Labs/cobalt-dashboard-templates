@@ -14,3 +14,7 @@ jobs:
         with:
           node-version: 24
       - run: node scripts/check.mjs
+      - run: npx playwright install --with-deps chromium
+        working-directory: packages/dashboard
+      - run: npm run test:browser
+        working-directory: packages/dashboard

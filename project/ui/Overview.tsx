@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ExternalLink } from "lucide-react";
-import { useDataset, safeUrl } from "../sdk";
+import { useDataset, safeUrl } from "@cobalt-code/dashboard";
 import {
   Badge,
   Card,
