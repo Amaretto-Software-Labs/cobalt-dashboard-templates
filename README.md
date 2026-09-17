@@ -14,6 +14,20 @@ npm run dev -- --port 5173
 
 Open `http://localhost:5173/?demo=1` for an explicitly labeled sample preview. Inside a Cobalt dashboard task, `npm run dev` uses the authorized live editing session automatically. Outside Cobalt, use explicit demo mode for fixtures. Demo code and preview theme defaults are excluded from production builds.
 
+## React library and sample dashboards
+
+```sh
+cd project
+npm ci
+npm run library
+```
+
+Open http://127.0.0.1:7343 for the working React catalog: 24 component examples, six base-control families, 12 dashboard compositions, search, priorities, notes and export. Buttons, Radix menus/selects/dialogs, form controls, chart inspection, board dragging/keyboard movement/undo, table sorting and record details use the same code as generated dashboards. See [component and dataset contracts](project/ui/README.md).
+
+The product catalog offers Kanban/My work, Review inbox, Release readiness, Service health, Incident room, Log explorer, Delivery flow, Release impact, Cloud cost, Customer health, Product adoption and Workspace briefing, plus a blank starting point. Source binding remains an authoring step: tasks, PRs, issues, metrics, logs and other authorized MCP responses are mapped into typed presentation data. The library uses clearly labeled synthetic data; production templates begin unconfigured.
+
+`npm run library:build` creates the standalone library in `project/.library-dist`. Dashboard `npm run build` produces separate publication assets in `dist`; it excludes the library index, fixture data and development preview adapter. Shared controls live in `project/ui`, compositions in `project/ui/compositions`, and the index in `project/ui/library`.
+
 ## Authoring in Cobalt
 
 Ask Cobalt to create or edit a dashboard. It delegates to a private coding task, using the chosen coding agent. The task's `dashboard_workspace` tool restores the saved project or provides the exact template commit to clone. The agent uses normal filesystem tools, tests, and browser previews.
@@ -44,7 +58,7 @@ This checks out the exact new template commit and performs a three-way merge usi
 
 `@cobalt-code/dashboard` provides the typed host bridge and data-loading hooks as a public npm package. Templates pin its version and lockfile; `npm ci` installs it and the production build bundles it. SDK source, tests, and release instructions live in `packages/dashboard`. Version 0.2.0 provides the Cobalt viewer bridge, Vite live editing transport, automatic dataset synchronization, and a CLI dataset runner. `datasets.json` references scripts in `datasets/`; `source-bindings.json` stores authorized source definitions. `npm run dataset:test -- main --params '{}'` runs current scripts against real data. `npm run preview` serves the saved build and rejects source changes made since building. Browser code never selects a draft version. Data source selection is explicit. Templates never assume a Kanban must use local cards: use connected data for tasks/issues or configure local dashboard records when requested. Connected source mutations are not currently supported by Cobalt; use source links instead of nonfunctional write controls.
 
-Use `useDataset<T>` for arbitrary typed JSON and `useLiveDataset<T>` for incremental feeds. The live hook polls without overlapping requests, backs off on failure, retains visibly stale results and stops scheduling on unmount. `DataTable` supports explicit partial results, continuation and detail callbacks; `TimeSeries` accepts timestamp/value observations with units; `LogStream` provides filtering, time filtering, display pause and follow-tail. These use the same shared controls and inherited tokens. Pausing the display continues collection; closing the component stops it. Live feeds use bounded incremental polling, not transport-level push events.
+Use `useDataset<T>` for arbitrary typed JSON and `useLiveDataset<T>` for incremental feeds. The live hook polls without overlapping requests, backs off on failure, retains visibly stale results and stops scheduling on unmount. `DataTable` supports explicit partial results, continuation and detail callbacks; `TimeSeries` accepts named series of timestamp/value observations with units; `LogStream` provides filtering, time filtering, display pause and follow-tail. These use the same shared controls and inherited tokens. Pausing the display continues collection; closing the component stops it. Live feeds use bounded incremental polling, not transport-level push events.
 
 Discover native, provider and MCP capabilities through Cobalt, then inspect their schemas and probe actual data before mapping results. Native PRs/tasks, deployment metrics, analytics and logs use the same bridge. Keep units, time windows, observed timestamps, continuation and partial-source failures explicit; never turn a failed source into a zero metric. Stream scripts return `{events, checkpoint, complete, gap?}` and receive the previous `input.checkpoint`; Cobalt persists the bounded event window per viewer, revision and query.
 
@@ -52,4 +66,4 @@ Discover native, provider and MCP capabilities through Cobalt, then inspect thei
 
 ## Contributor checks
 
-Run `node scripts/check.mjs` to scaffold, test, build and package every template. Files use the normal project toolchain. No credentials, sample provider responses, `.env`, node_modules or `.git` are included in publication packages.
+Run `node scripts/check.mjs` from a clean checkout to build the library, scaffold, test, build and package every template, and verify fixture exclusion. `cd project && npm run test:browser` exercises pointer/keyboard dragging and catalog navigation with Playwright (install Chromium first). Files use the normal project toolchain. No credentials, sample provider responses, `.env`, node_modules or `.git` are included in publication packages.

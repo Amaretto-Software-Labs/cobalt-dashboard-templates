@@ -7,23 +7,37 @@
     "dev": "vite --host 0.0.0.0",
     "build": "tsc --noEmit && vite build && node scripts/stamp-build.mjs",
     "package": "node scripts/package.mjs",
-    "test": "vitest run",
+    "test": "vitest run --exclude \"ui/library/browser/**\"",
     "template:rebase": "node scripts/rebase-template.mjs",
     "preview": "vite preview --host 0.0.0.0",
-    "dataset:test": "cobalt-dashboard dataset run"
+    "dataset:test": "cobalt-dashboard dataset run",
+    "library": "vite --config ui/library/vite.config.ts",
+    "library:build": "tsc --noEmit && vite build --config ui/library/vite.config.ts",
+    "library:preview": "vite preview --config ui/library/vite.config.ts --host 127.0.0.1 --port 7343",
+    "format": "prettier --write \"ui/**/*.{ts,tsx,css,html}\" \"src/**/*.{ts,tsx}\"",
+    "test:browser": "playwright test --config ui/library/playwright.config.ts"
   },
   "dependencies": {
     "@cobalt-code/dashboard": "0.2.0",
+    "@dnd-kit/dom": "^0.5.0",
+    "@dnd-kit/helpers": "^0.5.0",
+    "@dnd-kit/react": "^0.5.0",
     "lucide-react": "^1.37.0",
+    "radix-ui": "^1.6.7",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "recharts": "^3.10.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
+    "@types/node": "^26.6.1",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.5",
     "@vitejs/plugin-react": "^6.1.1",
     "jsdom": "^30.0.1",
+    "prettier": "^3.9.7",
     "typescript": "^7.0.2",
     "vite": "^8.2.2",
     "vitest": "^4.1.11"
