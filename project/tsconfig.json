@@ -11,5 +11,5 @@
     "allowImportingTsExtensions": true,
     "types": ["vite/client"]
   },
-  "include": ["src", "ui", "sdk"]
+  "include": ["src", "ui"]
 }

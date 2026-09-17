@@ -6,7 +6,7 @@ async function start() {
   if (import.meta.env.DEV) {
     await import("../ui/preview-theme.css");
     if (new URLSearchParams(location.search).get("demo") === "1")
-      await import("../sdk/demo");
+      await import("./demo");
   }
   createRoot(document.getElementById("root")!).render(<App />);
 }

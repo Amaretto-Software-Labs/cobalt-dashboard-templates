@@ -8,21 +8,24 @@
     "build": "tsc --noEmit && vite build && node scripts/stamp-build.mjs",
     "package": "node scripts/package.mjs",
     "test": "vitest run",
-    "template:rebase": "node scripts/rebase-template.mjs"
+    "template:rebase": "node scripts/rebase-template.mjs",
+    "preview": "vite preview --host 0.0.0.0",
+    "dataset:test": "cobalt-dashboard dataset run"
   },
   "dependencies": {
+    "@cobalt-code/dashboard": "0.2.0",
+    "lucide-react": "^1.37.0",
     "react": "19.2.8",
-    "react-dom": "19.2.8",
-    "lucide-react": "^1.37.0"
+    "react-dom": "19.2.8"
   },
   "devDependencies": {
+    "@testing-library/react": "^16.3.3",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.5",
     "@vitejs/plugin-react": "^6.1.1",
+    "jsdom": "^30.0.1",
     "typescript": "^7.0.2",
     "vite": "^8.2.2",
-    "vitest": "^4.1.11",
-    "jsdom": "^30.0.1",
-    "@testing-library/react": "^16.3.3"
+    "vitest": "^4.1.11"
   }
 }

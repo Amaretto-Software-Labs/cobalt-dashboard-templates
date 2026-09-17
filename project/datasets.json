@@ -2,7 +2,6 @@
   {
     "key": "main",
     "runtime": "javascript",
-    "script": "async function main(input, ctx) { return { configured: false, items: [], metrics: [], series: [] }; }",
     "parametersSchema": {
       "type": "object"
     },
@@ -31,11 +30,14 @@
           }
         }
       },
-      "required": ["configured"]
+      "required": [
+        "configured"
+      ]
     },
     "refresh": {
       "mode": "manual"
     },
-    "sourceAliases": []
+    "sourceAliases": [],
+    "scriptFile": "datasets/main.js"
   }
 ]

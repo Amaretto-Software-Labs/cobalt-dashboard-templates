@@ -18,10 +18,11 @@ export const sourceRoots = [
   "index.html",
   "manifest.json",
   "datasets.json",
+  "source-bindings.json",
+  "datasets",
   "AGENTS.md",
   "src",
   "ui",
-  "sdk",
   "scripts",
 ];
 export async function sourceFiles(root) {

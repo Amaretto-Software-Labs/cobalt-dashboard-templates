@@ -3,3 +3,4 @@ dist/
 .cobalt/
 coverage/
 .DS_Store
+*.tgz

@@ -14,6 +14,19 @@ const templates = JSON.parse(
 );
 const temporary = await mkdtemp(join(tmpdir(), "cobalt-templates-check-"));
 try {
+  const sdk = join(root, "packages/dashboard");
+  execFileSync("npm", ["ci", "--ignore-scripts"], {
+    cwd: sdk,
+    stdio: "inherit",
+  });
+  execFileSync("npm", ["test"], { cwd: sdk, stdio: "inherit" });
+  const [{ filename }] = JSON.parse(
+    execFileSync(
+      "npm",
+      ["pack", "--json", "--pack-destination", temporary],
+      { cwd: sdk, encoding: "utf8" },
+    ),
+  );
   for (const { key } of templates) {
     const destination = join(temporary, key);
     execFileSync(
@@ -23,6 +36,8 @@ try {
     );
     for (const args of [
       ["ci", "--ignore-scripts"],
+      // Test the package being authored, installed from its real npm artifact.
+      ["install", "--ignore-scripts", "--save-exact", join(temporary, filename)],
       ["test"],
       ["run", "build"],
       ["run", "package"],

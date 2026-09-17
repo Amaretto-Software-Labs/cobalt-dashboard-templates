@@ -1,0 +1,70 @@
+{
+  "name": "@cobalt-code/dashboard",
+  "version": "0.2.0",
+  "description": "Typed Cobalt dashboard bridge and React hooks for datasets, records, and actions.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./vite": {
+      "types": "./dist/vite.d.ts",
+      "import": "./dist/vite.js"
+    },
+    "./datasets": {
+      "types": "./dist/datasets.d.ts",
+      "import": "./dist/datasets.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Amaretto-Software-Labs/cobalt-dashboard-templates.git",
+    "directory": "packages/dashboard"
+  },
+  "bugs": {
+    "url": "https://github.com/Amaretto-Software-Labs/cobalt-dashboard-templates/issues"
+  },
+  "homepage": "https://github.com/Amaretto-Software-Labs/cobalt-dashboard-templates/tree/main/packages/dashboard#readme",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "prepack": "npm run build",
+    "test:browser": "npm run build && node tests/browser.mjs"
+  },
+  "peerDependencies": {
+    "react": "^19.2.8",
+    "vite": "^8.2.2"
+  },
+  "devDependencies": {
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.5",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.11",
+    "jsdom": "^30.0.1",
+    "@testing-library/react": "^16.3.3",
+    "vite": "^8.2.2",
+    "@types/node": "^24.0.0",
+    "@playwright/test": "1.62.1"
+  },
+  "bin": {
+    "cobalt-dashboard": "./dist/cli.js"
+  },
+  "peerDependenciesMeta": {
+    "vite": {
+      "optional": true
+    }
+  }
+}

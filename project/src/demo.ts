@@ -1,4 +1,4 @@
-import type { Dataset, Item, StoredRecord } from "./index";
+import type { Dataset, Item, StoredRecord } from "@cobalt-code/dashboard";
 const items: Item[] = [
   {
     id: "CB-124",

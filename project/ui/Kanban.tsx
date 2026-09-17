@@ -6,7 +6,7 @@ import {
   useDataset,
   type Item,
   type StoredRecord,
-} from "../sdk";
+} from "@cobalt-code/dashboard";
 import {
   Badge,
   Button,
