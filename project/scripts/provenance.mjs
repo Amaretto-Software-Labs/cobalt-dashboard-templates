@@ -72,6 +72,11 @@ export function git(root, ...args) {
       "user.name=Cobalt Dashboard",
       "-c",
       "user.email=dashboard@cobalt.local",
+      // These repositories are disposable; background maintenance can race with cleanup.
+      "-c",
+      "maintenance.auto=false",
+      "-c",
+      "gc.auto=0",
       ...args,
     ],
     { cwd: root, encoding: "utf8", maxBuffer: 16 * 1024 * 1024 },
