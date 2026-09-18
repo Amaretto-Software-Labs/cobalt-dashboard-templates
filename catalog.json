@@ -5,7 +5,12 @@
     "title": "Blank canvas",
     "description": "Compose a dashboard from the shared React library.",
     "requiredSources": [],
-    "requiresComputer": false
+    "requiresComputer": false,
+    "preview": {
+      "dark": "previews/blank-dark.png",
+      "light": "previews/blank-light.png"
+    },
+    "prompt": "Build a dashboard showing the work that needs my attention: active tasks, open pull requests, and blockers. Use the sources connected to this workspace, add filters and links to the original items, and ask me which projects to include."
   },
   {
     "key": "kanban",
@@ -13,7 +18,12 @@
     "title": "My work",
     "description": "A useful start to the day: tasks, reviews and blockers across tools.",
     "requiredSources": [],
-    "requiresComputer": false
+    "requiresComputer": false,
+    "preview": {
+      "dark": "previews/kanban-dark.png",
+      "light": "previews/kanban-light.png"
+    },
+    "prompt": "Build a board of my tasks and issues, grouped by status, with assignees, priorities, due dates, and links to the original items. Include search and filters for project and owner. Use connected workspace data and ask me which projects to include."
   },
   {
     "key": "review-inbox",
@@ -21,7 +31,12 @@
     "title": "Review inbox",
     "description": "Make the next review obvious, with age, ownership and checks in view.",
     "requiredSources": [],
-    "requiresComputer": false
+    "requiresComputer": false,
+    "preview": {
+      "dark": "previews/review-inbox-dark.png",
+      "light": "previews/review-inbox-light.png"
+    },
+    "prompt": "Show pull requests waiting for my review, sorted by age, with author, repository, checks, review status, and links to the PR. Let me filter by repository and highlight blocked or stale reviews. Ask me which repositories to include."
   },
   {
     "key": "release-readiness",
@@ -29,7 +44,12 @@
     "title": "Release readiness",
     "description": "A single view of scope, checks, ownership and release blockers.",
     "requiredSources": [],
-    "requiresComputer": false
+    "requiresComputer": false,
+    "preview": {
+      "dark": "previews/release-readiness-dark.png",
+      "light": "previews/release-readiness-light.png"
+    },
+    "prompt": "Show readiness for our next release: scope, open issues, pull requests, failing checks, owners, and blockers. Let me filter by milestone and repository, and link each item to its source. Ask me which release and projects to track."
   },
   {
     "key": "service-health",
@@ -37,7 +57,12 @@
     "title": "Service health",
     "description": "Latency, traffic and errors with the context needed to investigate.",
     "requiredSources": [],
-    "requiresComputer": false
+    "requiresComputer": false,
+    "preview": {
+      "dark": "previews/service-health-dark.png",
+      "light": "previews/service-health-light.png"
+    },
+    "prompt": "Show service health over the last 24 hours: request volume, error rate, latency, and active alerts. Use connected monitoring sources, add service and time-range filters, and link alerts to their details. Ask me which services and metrics to track."
   },
   {
     "key": "incident-room",
@@ -45,7 +70,12 @@
     "title": "Incident room",
     "description": "Correlate the current incident across metrics, logs and recent changes.",
     "requiredSources": [],
-    "requiresComputer": false
+    "requiresComputer": false,
+    "preview": {
+      "dark": "previews/incident-room-dark.png",
+      "light": "previews/incident-room-light.png"
+    },
+    "prompt": "Build an incident view combining alerts, error trends, recent logs, deployments, and response tasks on a shared timeline. Include severity and service filters and links to the evidence. Ask me which incident and connected sources to use."
   },
   {
     "key": "log-explorer",
@@ -53,7 +83,12 @@
     "title": "Log explorer",
     "description": "Search and inspect a bounded event stream without losing your place.",
     "requiredSources": [],
-    "requiresComputer": false
+    "requiresComputer": false,
+    "preview": {
+      "dark": "previews/log-explorer-dark.png",
+      "light": "previews/log-explorer-light.png"
+    },
+    "prompt": "Show a live log stream with search, severity and service filters, a time-range selector, and expandable event details. Let me pause the stream while investigating. Ask me which connected log source and services to use."
   },
   {
     "key": "delivery-flow",
@@ -61,7 +96,12 @@
     "title": "Delivery flow",
     "description": "Understand aging work, throughput and the points where work gets stuck.",
     "requiredSources": [],
-    "requiresComputer": false
+    "requiresComputer": false,
+    "preview": {
+      "dark": "previews/delivery-flow-dark.png",
+      "light": "previews/delivery-flow-light.png"
+    },
+    "prompt": "Show how work moves through our team: throughput, cycle time, aging items, and blocked work over the last 30 days. Include project and owner filters and links to the underlying tasks and issues. Ask me which team and projects to include."
   },
   {
     "key": "release-impact",
@@ -69,7 +109,12 @@
     "title": "Release impact",
     "description": "Connect releases to changes in reliability and customer experience.",
     "requiredSources": [],
-    "requiresComputer": false
+    "requiresComputer": false,
+    "preview": {
+      "dark": "previews/release-impact-dark.png",
+      "light": "previews/release-impact-light.png"
+    },
+    "prompt": "Compare error rate, latency, and usage before and after a release. Mark deployments on the charts and show related issues and pull requests. Ask me which release, services, and connected metrics to compare."
   },
   {
     "key": "cloud-cost",
@@ -77,7 +122,12 @@
     "title": "Cloud cost & usage",
     "description": "Understand spend, forecast pressure and the services driving change.",
     "requiredSources": [],
-    "requiresComputer": false
+    "requiresComputer": false,
+    "preview": {
+      "dark": "previews/cloud-cost-dark.png",
+      "light": "previews/cloud-cost-light.png"
+    },
+    "prompt": "Show month-to-date cloud spend, the forecast, changes from last month, and the largest cost drivers by service and project. Include daily trends and account filters. Ask me which connected billing sources and accounts to use."
   },
   {
     "key": "customer-health",
@@ -85,7 +135,12 @@
     "title": "Customer health",
     "description": "Combine adoption, support and account signals into an explainable view.",
     "requiredSources": [],
-    "requiresComputer": false
+    "requiresComputer": false,
+    "preview": {
+      "dark": "previews/customer-health-dark.png",
+      "light": "previews/customer-health-light.png"
+    },
+    "prompt": "Combine product usage, support issues, and account activity into a customer health view. Show the evidence behind each signal, recent changes, and accounts needing attention. Ask me which connected sources and customer segments to include."
   },
   {
     "key": "product-adoption",
@@ -93,7 +148,12 @@
     "title": "Product adoption",
     "description": "Connect acquisition and activation to engagement and retention.",
     "requiredSources": [],
-    "requiresComputer": false
+    "requiresComputer": false,
+    "preview": {
+      "dark": "previews/product-adoption-dark.png",
+      "light": "previews/product-adoption-light.png"
+    },
+    "prompt": "Show acquisition, activation, engagement, and retention, with trends and a conversion funnel. Include date-range and customer-segment filters. Ask me which connected analytics source and events define each stage."
   },
   {
     "key": "workspace-briefing",
@@ -101,6 +161,11 @@
     "title": "Workspace briefing",
     "description": "Compose an evidence-backed briefing from whichever sources the user chooses.",
     "requiredSources": [],
-    "requiresComputer": false
+    "requiresComputer": false,
+    "preview": {
+      "dark": "previews/workspace-briefing-dark.png",
+      "light": "previews/workspace-briefing-light.png"
+    },
+    "prompt": "Give me a daily workspace briefing: completed work, active tasks, pending reviews, blockers, and upcoming releases. Link every summary to its evidence and let me filter by project. Ask me which teams and connected sources to include."
   }
 ]
