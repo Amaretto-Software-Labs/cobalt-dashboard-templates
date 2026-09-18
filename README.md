@@ -67,3 +67,16 @@ Discover native, provider and MCP capabilities through Cobalt, then inspect thei
 ## Contributor checks
 
 Run `node scripts/check.mjs` from a clean checkout to build the library, scaffold, test, build and package every template, and verify fixture exclusion. `cd project && npm run test:browser` exercises pointer/keyboard dragging and catalog navigation with Playwright (install Chromium first). Files use the normal project toolchain. No credentials, sample provider responses, `.env`, node_modules or `.git` are included in publication packages.
+
+## Template screenshots and prompts
+
+Each `catalog.json` entry owns its editable `prompt` and `preview.dark` / `preview.light` image paths. Cobalt resolves those relative paths against the catalog's exact Git commit. Images are screenshots of the actual scaffolded React template with its explicit `?demo=1` adapter, not illustrations. They retain the sample-data notice and use Cobalt's light/dark theme tokens.
+
+After editing templates or shared components, install the project dependencies and Playwright Chromium, then run from the repository root:
+
+```sh
+node scripts/screenshots.mjs
+node --test scripts/catalog.test.mjs
+```
+
+The generator overlays each template onto the shared project in a temporary directory, runs the existing Vite app, fixes the sample clock and viewport, and saves 1280×800 PNGs under `previews/`. It never calls a workspace data source or needs a Cobalt credential. Commit the images together with the catalog and component changes. CI checks every catalog prompt and both image files; publishing them needs only a templates-repository release, not an SDK release.
