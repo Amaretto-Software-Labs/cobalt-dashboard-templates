@@ -265,10 +265,13 @@ a:focus-visible {
 .check-label {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
+  gap: 10px;
+  min-height: 32px;
+  line-height: 1.5;
   font-size: 12px;
 }
 .ui-checkbox {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -278,6 +281,15 @@ a:focus-visible {
   border: 1px solid var(--color-border);
   border-radius: 4px;
   padding: 0;
+}
+.ui-checkbox-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
+.ui-checkbox-indicator svg {
+  display: block;
 }
 .ui-checkbox[data-state="checked"] {
   background: var(--color-accent);
@@ -505,6 +517,48 @@ a:focus-visible {
   gap: 7px;
   min-width: 0;
 }
+.metric-action {
+  position: relative;
+  width: 100%;
+  font: inherit;
+  color: var(--color-text);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease;
+}
+.metric-action:hover,
+.metric-action:focus-visible {
+  border-color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 6%, var(--color-panel));
+  transform: translateY(-2px);
+}
+.metric-action:active {
+  transform: translateY(0);
+}
+.metric-action[aria-pressed="true"] {
+  border-color: var(--color-accent);
+}
+.metric-action-icon {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  color: var(--color-text-muted);
+}
+.metric-action > .muted {
+  padding-right: 20px;
+}
+.metric-filter {
+  margin: 12px 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .metric-action:hover,
+  .metric-action:focus-visible {
+    transform: none;
+  }
+}
 .metric > span {
   font-size: 11px;
 }
@@ -659,7 +713,24 @@ a:focus-visible {
   color: var(--color-text);
   text-align: left;
   font-size: 12px;
-  transition: width 0.3s;
+  cursor: pointer;
+  transition:
+    width 300ms ease,
+    transform 180ms ease,
+    background 180ms ease,
+    filter 180ms ease;
+}
+.funnel-step:not(:disabled):hover,
+.funnel-step:not(:disabled):focus-visible {
+  transform: translateY(-2px);
+  background: color-mix(in srgb, var(--color-accent) 22%, var(--color-panel));
+  filter: brightness(1.08);
+}
+.funnel-step:not(:disabled):active {
+  transform: translateY(0);
+}
+.funnel-step:disabled {
+  cursor: default;
 }
 .funnel-step small {
   display: block;
@@ -861,6 +932,39 @@ a:focus-visible {
 .column-heading {
   margin-bottom: 15px;
 }
+.column-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.column.column-collapsed {
+  padding: 4px;
+}
+.collapsed-lane-toggle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  height: 100%;
+  min-height: 230px;
+  padding: 10px 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font: inherit;
+}
+.collapsed-lane-toggle:hover {
+  background: var(--color-hover);
+  color: var(--color-accent);
+}
+.collapsed-lane-title {
+  writing-mode: vertical-rl;
+  font-size: 12px;
+  font-weight: 600;
+}
 .column-heading h2 {
   font-size: 12px;
   color: var(--color-text-muted);
@@ -909,9 +1013,40 @@ a:focus-visible {
   box-shadow: var(--shadow-lg);
   border-color: var(--color-accent);
 }
-.drop-target {
+.column.drop-target {
   border-color: var(--color-accent);
-  background: var(--color-accent-dim);
+  background: color-mix(in srgb, var(--color-accent) 8%, var(--color-canvas));
+  box-shadow: inset 0 0 0 1px var(--color-accent);
+}
+/* dnd-kit's clone occupies the exact projected slot, including during reorder. */
+.column .work-card[data-dnd-placeholder] {
+  position: relative;
+  border: 2px dashed var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 10%, var(--color-panel));
+  box-shadow: none;
+}
+.column .work-card[data-dnd-placeholder] > * {
+  visibility: hidden;
+}
+.column .work-card[data-dnd-placeholder]::after {
+  content: "Drop here";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--color-accent);
+  font-size: 12px;
+  font-weight: 600;
+}
+.column .work-card[data-dnd-placeholder]::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: -2px;
+  right: -2px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--color-accent);
 }
 .empty-column {
   padding: 30px 8px;
@@ -1023,4 +1158,357 @@ a:focus-visible {
     transition: none !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* Selection reveals schedule relationships without changing source dates. */
+.timeline-axis {
+  margin-top: 0;
+  font-size: 10px;
+  color: var(--color-text-muted);
+}
+.timeline-axis > div {
+  display: flex;
+  justify-content: space-between;
+}
+.milestone-row {
+  border-radius: 5px;
+  padding: 5px 0;
+}
+.milestone-selected {
+  background: var(--color-accent-dim);
+  outline: 1px solid var(--color-accent);
+  outline-offset: -1px;
+}
+.milestone-related {
+  background: var(--color-hover);
+}
+.milestone-related .milestone-track {
+  outline: 1px dashed var(--color-accent);
+}
+.milestone-bar {
+  cursor: pointer;
+  transition:
+    background 150ms ease,
+    box-shadow 150ms ease;
+}
+.milestone-bar:hover,
+.milestone-bar:focus-visible {
+  background: color-mix(in srgb, var(--color-accent) 28%, var(--color-panel));
+  box-shadow: inset 0 0 0 1px var(--color-accent);
+}
+.milestone-bar[aria-pressed="true"] {
+  box-shadow: inset 0 0 0 2px var(--color-accent);
+}
+.milestone-inspector {
+  border-top: 1px solid var(--color-border);
+  padding-top: 14px;
+  margin-top: 14px;
+}
+.milestone-inspector .notice {
+  margin: 10px 0;
+}
+.dependency-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin: 8px 0;
+  font-size: 12px;
+}
+.dependency-links > span:first-child {
+  min-width: 80px;
+}
+.timeline-hint {
+  font-size: 12px;
+}
+.progress-checks {
+  margin-top: 12px;
+}
+.progress-check {
+  justify-content: flex-start;
+  gap: 10px;
+}
+.check-details {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: none;
+  color: var(--color-text);
+  text-align: left;
+  font: inherit;
+  padding: 9px 6px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+.check-details:hover,
+.check-details:focus-visible {
+  background: var(--color-hover);
+}
+
+.milestone-range {
+  position: absolute;
+  height: 28px;
+  min-width: 26px;
+}
+.milestone-range .milestone-bar {
+  width: 100%;
+  left: 0;
+  padding: 0 14px;
+}
+.milestone-editable {
+  cursor: grab;
+  touch-action: none;
+}
+.milestone-editable:active {
+  cursor: grabbing;
+}
+.milestone-grip {
+  position: absolute;
+  top: 0;
+  width: 12px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 3px;
+  background: var(--color-accent-dim);
+  color: var(--color-text);
+  cursor: ew-resize;
+  touch-action: none;
+}
+.milestone-grip:hover,
+.milestone-grip:focus-visible {
+  background: var(--color-accent);
+}
+.milestone-grip-start {
+  left: 0;
+}
+.milestone-grip-end {
+  right: 0;
+}
+.milestone-editor {
+  display: grid;
+  gap: 16px;
+  margin: 18px 0;
+}
+.milestone-editor-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.milestone-editor fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  padding: 12px;
+}
+.milestone-editor legend {
+  color: var(--color-muted);
+  font-size: 12px;
+}
+.check-collapsible {
+  border-bottom: 1px solid var(--color-border);
+}
+.check-collapsible:last-child {
+  border-bottom: 0;
+}
+.check-collapsible .check-details {
+  width: 100%;
+  padding: 14px 8px;
+}
+.progress-check-label {
+  display: block;
+  flex: 1;
+  min-width: 0;
+  line-height: 1.5;
+}
+.progress-check-label small {
+  display: block;
+  margin-top: 4px;
+}
+.check-chevron {
+  transition: transform 180ms ease;
+  color: var(--color-muted);
+  flex-shrink: 0;
+}
+.check-details[data-state="open"] .check-chevron {
+  transform: rotate(90deg);
+}
+.check-details[data-state="open"] {
+  background: var(--color-hover);
+}
+.check-content {
+  overflow: hidden;
+}
+.check-content[data-state="open"] {
+  animation: check-expand 180ms ease-out;
+}
+.check-content[data-state="closed"] {
+  animation: check-collapse 180ms ease-in;
+}
+.check-content-inner {
+  display: grid;
+  gap: 12px;
+  padding: 16px 12px 20px 33px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.check-content-inner p {
+  margin: 0;
+}
+.check-actions {
+  padding-top: 4px;
+}
+@keyframes check-expand {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+  to {
+    height: var(--radix-collapsible-content-height);
+    opacity: 1;
+  }
+}
+@keyframes check-collapse {
+  from {
+    height: var(--radix-collapsible-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+@media (max-width: 600px) {
+  .milestone-editor-fields {
+    grid-template-columns: 1fr;
+  }
+}
+
+.chart-selection {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+.chart-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-height: 150px;
+  overflow: auto;
+  padding: 3px;
+}
+.chart-options .cobalt-button {
+  font-size: 11px;
+  gap: 8px;
+}
+.chart-options [aria-pressed="true"] {
+  color: var(--color-accent);
+  background: var(--color-accent-dim);
+}
+.breakdown-row[aria-pressed="true"] {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+.breakdown-row[aria-pressed="true"] .bar-track > span {
+  filter: brightness(1.2);
+}
+.funnel-step[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--color-accent) 28%, var(--color-panel));
+  border-left-width: 4px;
+}
+.heat-cell[aria-pressed="true"] {
+  box-shadow: inset 0 0 0 2px var(--color-text);
+}
+.chart-legend [aria-pressed="false"] {
+  opacity: 0.45;
+}
+.chart-caption,
+.chart-scope {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+.chart-range,
+.chart-breadcrumbs {
+  margin: 10px 0;
+  font-size: 12px;
+}
+.chart-explorer {
+  display: grid;
+  gap: 18px;
+  margin: 20px 0;
+  min-width: 0;
+}
+.chart-explorer-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(220px, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+.chart-explorer-primary,
+.chart-explorer-linked {
+  display: grid;
+  min-width: 0;
+  gap: 12px;
+}
+.treemap-node {
+  cursor: pointer;
+  outline: none;
+}
+.treemap-node rect,
+.recharts-bar-rectangle,
+.recharts-pie-sector,
+.recharts-scatter-symbol,
+.recharts-sector,
+.recharts-rectangle,
+.recharts-symbol {
+  transition:
+    opacity 180ms ease,
+    filter 180ms ease;
+}
+.treemap-node:hover rect,
+.treemap-node:focus-visible rect,
+.recharts-bar-rectangle:hover,
+.recharts-pie-sector:hover,
+.recharts-scatter-symbol:hover {
+  filter: brightness(1.15);
+}
+.treemap-node:focus-visible rect {
+  stroke: var(--color-text);
+  stroke-width: 3px;
+}
+@media (max-width: 1000px) {
+  .chart-explorer-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* SVG focus follows the active mark rather than its rectangular bounding box.
+   Recharts handles arrow-key traversal; the HTML selection controls retain their focus rings. */
+.chart-frame .recharts-surface,
+.chart-frame svg [tabindex] {
+  outline: none;
+}
+.chart-frame {
+  position: relative;
+}
+.chart-frame:has(.recharts-surface:focus-visible)::after {
+  content: "Use arrow keys to explore";
+  position: absolute;
+  top: 0;
+  right: 8px;
+  padding: 3px 6px;
+  border-radius: 4px;
+  background: var(--color-panel);
+  color: var(--color-accent);
+  font-size: 11px;
+  pointer-events: none;
+}
+
+.chart-frame .recharts-brush-traveller:focus-visible rect {
+  stroke: var(--color-accent);
+  stroke-width: 2px;
 }

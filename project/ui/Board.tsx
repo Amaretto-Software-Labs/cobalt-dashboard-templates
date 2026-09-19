@@ -1,11 +1,15 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { DragDropProvider, useDroppable } from "@dnd-kit/react";
-import { useSortable } from "@dnd-kit/react/sortable";
+import {
+  DragDropProvider,
+  useDroppable,
+  useDragOperation,
+} from "@dnd-kit/react";
+import { useSortable, isSortable } from "@dnd-kit/react/sortable";
 import { SortableKeyboardPlugin } from "@dnd-kit/dom/sortable";
 import { Feedback } from "@dnd-kit/dom";
 import { move } from "@dnd-kit/helpers";
-import { GripVertical, Undo2 } from "lucide-react";
-import { Button, Notice, Select, Tooltip } from "./Controls";
+import { GripVertical, Undo2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Button, IconButton, Notice, Tooltip } from "./Controls";
 import { Badge } from "./Layout";
 export type BoardItem = {
   id: string;
@@ -36,33 +40,68 @@ function Lane({
   children,
   count,
   disabled,
+  collapsed,
+  onToggle,
 }: {
   id: string;
   children: ReactNode;
   count: number;
   disabled: boolean;
+  collapsed: boolean;
+  onToggle: () => void;
 }) {
+  const { target, source } = useDragOperation();
+  const targetLane =
+    target && isSortable(target) ? target.sortable.group : target?.id;
   const { ref, isDropTarget } = useDroppable({
     id,
     accept: "card",
     disabled,
-    collisionPriority: 0,
   });
   return (
     <section
       ref={ref}
-      className={`column ${isDropTarget ? "drop-target" : ""}`}
+      className={`column ${collapsed ? "column-collapsed" : ""} ${!disabled && (isDropTarget || targetLane === id) ? "drop-target" : ""}`}
       aria-label={id}
     >
-      <header className="column-heading">
-        <h2>{id}</h2>
-        <Badge>{count}</Badge>
-      </header>
-      {children}
-      {!count && (
-        <div className="empty-column">
-          {disabled ? "No cards" : "Drop a card here"}
-        </div>
+      {collapsed ? (
+        <Tooltip label={`Expand ${id} lane`}>
+          <button
+            type="button"
+            className="collapsed-lane-toggle"
+            aria-label={`Expand ${id} lane`}
+            aria-expanded={false}
+            onClick={onToggle}
+            disabled={!!source}
+          >
+            <ChevronRight size={16} aria-hidden="true" />
+            <Badge>{count}</Badge>
+            <span className="collapsed-lane-title">{id}</span>
+          </button>
+        </Tooltip>
+      ) : (
+        <>
+          <header className="column-heading">
+            <div className="column-actions">
+              <IconButton
+                label={`Collapse ${id} lane`}
+                aria-expanded={true}
+                onClick={onToggle}
+                disabled={!!source}
+              >
+                <ChevronLeft size={16} />
+              </IconButton>
+              <h2>{id}</h2>
+            </div>
+            <Badge>{count}</Badge>
+          </header>
+          {children}
+          {!count && (
+            <div className="empty-column">
+              {disabled ? "No cards" : "Drop a card here"}
+            </div>
+          )}
+        </>
       )}
     </section>
   );
@@ -71,18 +110,14 @@ function BoardCard({
   item,
   index,
   lane,
-  lanes,
   disabled,
   onOpen,
-  onMove,
 }: {
   item: BoardItem;
   index: number;
   lane: string;
-  lanes: string[];
   disabled: boolean;
   onOpen: (item: BoardItem) => void;
-  onMove: (change: BoardMove) => void;
 }) {
   const { ref, handleRef, isDragging } = useSortable({
     id: item.id,
@@ -130,14 +165,6 @@ function BoardCard({
         )}
       </div>
       {item.project && <small className="muted">{item.project}</small>}
-      {!disabled && (
-        <Select
-          label={`Status for ${item.title}`}
-          value={item.status}
-          onChange={(status) => onMove({ id: item.id, status })}
-          options={lanes.map((value) => ({ value, label: value }))}
-        />
-      )}
     </article>
   );
 }
@@ -160,6 +187,7 @@ export function WorkBoard({
       ]),
     );
   const [draft, setDraft] = useState(groups),
+    [collapsedLanes, setCollapsedLanes] = useState<string[]>([]),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
     [undo, setUndo] = useState<BoardMove>(),
@@ -220,14 +248,24 @@ export function WorkBoard({
         onDragStart={() => {
           dragging.current = true;
         }}
+        onDragOver={(event) => {
+          const target = event.operation.target;
+          const lane =
+            target && isSortable(target) ? target.sortable.group : target?.id;
+          setCollapsedLanes((current) =>
+            current.includes(String(lane))
+              ? current.filter((id) => id !== lane)
+              : current,
+          );
+          setDraft((current) => move(current, event));
+        }}
         onDragEnd={(event) => {
           dragging.current = false;
-          if (event.canceled) {
+          if (event.canceled || !event.operation.target) {
             setDraft(groups());
             return;
           }
-          const next = move(draft, event);
-          setDraft(next);
+          const next = draft;
           const id = String(event.operation.source?.id || ""),
             group = Object.entries(next).find(([, ids]) => ids.includes(id));
           if (group) {
@@ -239,7 +277,11 @@ export function WorkBoard({
         <div
           className="board"
           style={{
-            gridTemplateColumns: `repeat(${Math.max(1, lanes.length)},minmax(220px,1fr))`,
+            gridTemplateColumns: lanes
+              .map((lane) =>
+                collapsedLanes.includes(lane) ? "44px" : "minmax(220px, 1fr)",
+              )
+              .join(" "),
           }}
         >
           {lanes.map((lane) => (
@@ -247,6 +289,14 @@ export function WorkBoard({
               key={lane}
               id={lane}
               count={draft[lane]?.length || 0}
+              collapsed={collapsedLanes.includes(lane)}
+              onToggle={() =>
+                setCollapsedLanes((current) =>
+                  current.includes(lane)
+                    ? current.filter((id) => id !== lane)
+                    : [...current, lane],
+                )
+              }
               disabled={!onMove || busy}
             >
               {(draft[lane] || []).map((id, index) => {
@@ -257,10 +307,8 @@ export function WorkBoard({
                     item={item}
                     index={index}
                     lane={lane}
-                    lanes={lanes}
                     disabled={!onMove || busy}
                     onOpen={onSelect}
-                    onMove={(change) => void commit(change)}
                   />
                 ) : null;
               })}

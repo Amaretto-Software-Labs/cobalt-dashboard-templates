@@ -7,7 +7,7 @@ import {
   type StoredRecord,
 } from "@cobalt-code/dashboard";
 import { Dashboard, FilterBar, State } from "../Layout";
-import { Button, Refresh, Notice } from "../Controls";
+import { Button, Notice } from "../Controls";
 import { applyBoardMove, type BoardMove } from "../Board";
 import { DashboardComposition } from "./DashboardComposition";
 import { RecordEditor } from "./RecordEditor";
@@ -90,14 +90,6 @@ export default function TemplateDashboard({
       description={description || definition.description}
       actions={
         <>
-          <Refresh
-            loading={loading}
-            onClick={() => {
-              void refresh();
-              if (local)
-                void loadRecords().catch((e) => setRecordError(String(e)));
-            }}
-          />
           {local && (
             <Button
               primary
@@ -144,7 +136,7 @@ export default function TemplateDashboard({
             query={query}
             params={params}
             onMove={local ? moveCard : undefined}
-            onEdit={(item) => setEditing(item)}
+            onEdit={local ? setEditing : undefined}
             onRetry={refresh}
           />
         </>

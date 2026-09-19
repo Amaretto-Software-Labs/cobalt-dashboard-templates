@@ -1,3 +1,5 @@
+import { ChartExplorer } from "../compositions/ChartExplorer";
+import { chartFixture } from "./chartFixtures";
 import { useState } from "react";
 import {
   Copy,
@@ -25,13 +27,7 @@ import {
 } from "../Controls";
 import { Metric, FilterBar, SourceFreshness, Panel } from "../Layout";
 import { DataTable, LogExplorer } from "../DataViews";
-import {
-  TimeSeries,
-  Breakdown,
-  Distribution,
-  Heatmap,
-  Funnel,
-} from "../Charts";
+
 import { WorkBoard, applyBoardMove } from "../Board";
 import {
   ActivityTimeline,
@@ -48,6 +44,10 @@ import type { Item } from "@cobalt-code/dashboard";
 export function ComponentDemo({ id }: { id: string }) {
   const [data] = useState(() => fixture("service")),
     [items, setItems] = useState(() => fixture("work").items!),
+    [milestones, setMilestones] = useState(
+      () => fixture("service").milestones!,
+    ),
+    [checks, setChecks] = useState(() => fixture("service").progress!.checks!),
     [editing, setEditing] = useState<Item>(),
     [detail, setDetail] = useState<DetailRecord>(),
     [query, setQuery] = useState(""),
@@ -72,25 +72,40 @@ export function ComponentDemo({ id }: { id: string }) {
     setMessage("Sample action completed.");
   };
   const views: Record<string, () => React.ReactNode> = {
+    area: () => <ChartExplorer records={chartFixture()} initialView="area" />,
+    comparison: () => (
+      <ChartExplorer records={chartFixture()} initialView="comparison" />
+    ),
+    scatter: () => (
+      <ChartExplorer records={chartFixture()} initialView="scatter" />
+    ),
+    donut: () => <ChartExplorer records={chartFixture()} initialView="donut" />,
+    treemap: () => (
+      <ChartExplorer records={chartFixture()} initialView="treemap" />
+    ),
     metric: () => (
       <div className="metric-grid">
         {data.metrics?.map((m) => (
-          <Metric key={m.label} {...m} trend={[12, 18, 15, 24, 20, 28]} />
+          <Metric
+            key={m.label}
+            {...m}
+            trend={[12, 18, 15, 24, 20, 28]}
+            actionLabel="Inspect observation and source"
+            onSelect={() =>
+              inspect(m.label, {
+                Value: m.value,
+                Unit: m.unit,
+                Comparison: m.change,
+                "Observed at": data.updatedAt,
+                Source: "Illustrative library data",
+              })
+            }
+          />
         ))}
       </div>
     ),
     series: () => (
-      <TimeSeries
-        label="Request latency"
-        unit="ms"
-        series={data.trends!}
-        annotations={data.annotations}
-        onRangeChange={(start, end) =>
-          setMessage(
-            `${new Date(start).toLocaleDateString()} – ${new Date(end).toLocaleDateString()}`,
-          )
-        }
-      />
+      <ChartExplorer records={chartFixture()} initialView="series" />
     ),
     table: () => (
       <DataTable
@@ -186,56 +201,49 @@ export function ComponentDemo({ id }: { id: string }) {
       />
     ),
     breakdown: () => (
-      <Breakdown
-        categories={data.categories!}
-        onSelect={(id) =>
-          inspect(
-            id,
-            data.categories!.find((e) => e.id === id)!,
-          )
-        }
-      />
+      <ChartExplorer records={chartFixture()} initialView="breakdown" />
     ),
     distribution: () => (
-      <Distribution
-        bins={data.bins!}
-        unit="ms"
-        percentiles={data.percentiles}
-        onSelect={(b) => inspect(b.label, b)}
-      />
+      <ChartExplorer records={chartFixture()} initialView="distribution" />
     ),
     heatmap: () => (
-      <Heatmap
-        {...data.heatmap!}
-        onSelect={(c) => inspect("Cell observation", c)}
-      />
+      <ChartExplorer records={chartFixture()} initialView="heatmap" />
     ),
     timeline: () => (
       <MilestoneTimeline
-        items={data.milestones!}
+        items={milestones}
+        onChange={async (item) =>
+          setMilestones((current) =>
+            current.map((i) => (i.id === item.id ? item : i)),
+          )
+        }
         onSelect={(id) =>
           inspect(
             id,
-            data.milestones!.find((e) => e.id === id)!,
+            milestones.find((e) => e.id === id)!,
           )
         }
       />
     ),
     funnel: () => (
-      <Funnel
-        steps={data.funnel!}
-        onSelect={(id) =>
-          inspect(
-            id,
-            data.funnel!.find((e) => e.id === id)!,
-          )
-        }
-      />
+      <ChartExplorer records={chartFixture()} initialView="funnel" />
     ),
     narrative: () => (
       <Narrative title="Today’s briefing" sections={data.sections!} />
     ),
-    progress: () => <ProgressTarget {...data.progress!} />,
+    progress: () => (
+      <ProgressTarget
+        {...data.progress!}
+        checks={checks}
+        current={checks.filter((c) => c.done).length}
+        target={checks.length}
+        onCheckChange={async (id, done) =>
+          setChecks((current) =>
+            current.map((c) => (c.id === id ? { ...c, done } : c)),
+          )
+        }
+      />
+    ),
     filters: () => (
       <>
         <FilterBar
@@ -376,7 +384,7 @@ export function ComponentDemo({ id }: { id: string }) {
         <div className="dashboard-heading">
           <div>
             <h3>Production health</h3>
-            <small className="muted">Private dashboard · Sample record</small>
+            <small className="muted">Sample record</small>
           </div>
           <Menu
             label="Dashboard actions"

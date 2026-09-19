@@ -76,6 +76,8 @@ export const dashboards = [
       "Latency, traffic and errors with the context needed to investigate.",
     sources: ["Datadog MCP", "Azure Monitor / analytics", "Any metrics MCP"],
     uses: [
+      "scatter",
+      "comparison",
       "metric",
       "series",
       "status",
@@ -179,6 +181,8 @@ export const dashboards = [
       "Connect releases to changes in reliability and customer experience.",
     sources: ["CI / CD", "Metrics MCP", "Errors / issues"],
     uses: [
+      "area",
+      "comparison",
       "metric",
       "series",
       "activity",
@@ -205,6 +209,8 @@ export const dashboards = [
       "Understand spend, forecast pressure and the services driving change.",
     sources: ["Cloud billing MCP", "Usage / metrics MCP"],
     uses: [
+      "donut",
+      "treemap",
       "metric",
       "series",
       "breakdown",
@@ -257,6 +263,8 @@ export const dashboards = [
       "Connect acquisition and activation to engagement and retention.",
     sources: ["Analytics MCP", "Warehouse MCP", "Product events"],
     uses: [
+      "comparison",
+      "heatmap",
       "metric",
       "funnel",
       "heatmap",

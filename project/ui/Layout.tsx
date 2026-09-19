@@ -1,7 +1,14 @@
 import type { ReactNode, PropsWithChildren } from "react";
-import { Inbox, LoaderCircle, ExternalLink } from "lucide-react";
+import { Inbox, LoaderCircle, ExternalLink, ArrowUpRight } from "lucide-react";
 import { safeUrl } from "@cobalt-code/dashboard";
-import { Button, Notice, Select, SearchField, type Tone } from "./Controls";
+import {
+  Button,
+  Notice,
+  Select,
+  SearchField,
+  Tooltip,
+  type Tone,
+} from "./Controls";
 export function Card({
   children,
   className = "",
@@ -106,6 +113,9 @@ export function Metric({
   change,
   tone = "neutral",
   trend = [],
+  onSelect,
+  actionLabel,
+  selected,
 }: {
   label: string;
   value: ReactNode;
@@ -113,12 +123,15 @@ export function Metric({
   change?: string;
   tone?: Tone;
   trend?: number[];
-}) {
+} & (
+  | { onSelect: () => void; actionLabel: string; selected?: boolean }
+  | { onSelect?: undefined; actionLabel?: undefined; selected?: undefined }
+)) {
   const valid = trend.filter(Number.isFinite),
     min = Math.min(...valid),
     range = Math.max(...valid) - min || 1;
-  return (
-    <Card className="metric">
+  const content = (
+    <>
       <span className="muted">{label}</span>
       <strong>
         {value ?? "—"}
@@ -140,7 +153,27 @@ export function Metric({
           />
         </svg>
       )}
-    </Card>
+    </>
+  );
+  return onSelect ? (
+    <Tooltip label={actionLabel}>
+      <button
+        type="button"
+        className="cobalt-card metric metric-action"
+        onClick={onSelect}
+        aria-label={`${label}: ${actionLabel}`}
+        aria-pressed={selected}
+      >
+        {content}
+        <ArrowUpRight
+          size={15}
+          className="metric-action-icon"
+          aria-hidden="true"
+        />
+      </button>
+    </Tooltip>
+  ) : (
+    <Card className="metric">{content}</Card>
   );
 }
 export function FilterBar({
