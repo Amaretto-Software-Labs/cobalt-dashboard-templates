@@ -14,29 +14,29 @@ test("local board writes use the real host action and current record version", a
     getDataset: vi
       .fn()
       .mockResolvedValue({ configured: true, mode: "records", items: [] }),
-    getRecords: vi
-      .fn()
-      .mockResolvedValue({
-        items: [
-          {
-            recordId: "card-1",
-            version: 7,
-            values: {
-              title: "Ship dashboard",
-              status: "To do",
-              position: 1000,
-            },
+    getRecords: vi.fn().mockResolvedValue({
+      items: [
+        {
+          recordId: "card-1",
+          version: 7,
+          values: {
+            title: "Ship dashboard",
+            status: "To do",
+            position: 1000,
           },
-        ],
-      }),
+        },
+      ],
+    }),
     requestAction: action,
   };
   render(<Kanban />);
   const user = userEvent.setup();
   await user.click(
-    await screen.findByRole("combobox", { name: "Status for Ship dashboard" }),
+    await screen.findByRole("button", { name: "Ship dashboard" }),
   );
+  await user.click(screen.getByRole("combobox", { name: "Card status" }));
   await user.click(await screen.findByRole("option", { name: "Done" }));
+  await user.click(screen.getByRole("button", { name: "Save card" }));
   await waitFor(() =>
     expect(action).toHaveBeenCalledWith("save-card", {
       recordId: "card-1",
@@ -45,7 +45,7 @@ test("local board writes use the real host action and current record version", a
         id: "card-1",
         title: "Ship dashboard",
         status: "Done",
-        position: 0,
+        position: 1000,
       },
     }),
   );
@@ -53,20 +53,18 @@ test("local board writes use the real host action and current record version", a
 test("connected boards expose source details without unsupported writes", async () => {
   const action = vi.fn();
   window.cobaltDashboard = {
-    getDataset: vi
-      .fn()
-      .mockResolvedValue({
-        configured: true,
-        mode: "connected",
-        items: [
-          {
-            id: "issue-1",
-            title: "Real issue",
-            status: "To do",
-            url: "https://example.com/1",
-          },
-        ],
-      }),
+    getDataset: vi.fn().mockResolvedValue({
+      configured: true,
+      mode: "connected",
+      items: [
+        {
+          id: "issue-1",
+          title: "Real issue",
+          status: "To do",
+          url: "https://example.com/1",
+        },
+      ],
+    }),
     getRecords: vi.fn(),
     requestAction: action,
   };

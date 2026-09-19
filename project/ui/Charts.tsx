@@ -2,6 +2,8 @@ import { useMemo, useState } from "react";
 import {
   ResponsiveContainer,
   LineChart,
+  AreaChart,
+  Area,
   Line,
   XAxis,
   YAxis,
@@ -11,6 +13,7 @@ import {
   ReferenceLine,
   BarChart,
   Bar,
+  Cell,
 } from "recharts";
 import { Button, useReducedMotion } from "./Controls";
 import { Panel, Badge } from "./Layout";
@@ -34,14 +37,24 @@ export function TimeSeries({
   complete = true,
   annotations = [],
   onRangeChange,
+  range,
+  variant = "line",
 }: {
   series: Series[];
   label: string;
   unit?: string;
   complete?: boolean;
   annotations?: { time: string; label: string }[];
+  range?: { start: string; end: string };
+  variant?: "line" | "area" | "stacked-area";
   onRangeChange?: (start: string, end: string) => void;
 }) {
+  const [localRange, setLocalRange] = useState<{
+    start: string;
+    end: string;
+  }>();
+  const activeRange = onRangeChange ? range : localRange;
+  const Plot = variant === "line" ? LineChart : AreaChart;
   const [hidden, setHidden] = useState<string[]>([]);
   const reduce = useReducedMotion();
   const data = useMemo(() => {
@@ -103,6 +116,26 @@ export function TimeSeries({
           </Button>
         ))}
       </div>
+      {activeRange && (
+        <div className="toolbar chart-range">
+          <span role="status">
+            {formatTime(activeRange.start)} – {formatTime(activeRange.end)}
+          </span>
+          <Button
+            variant="quiet"
+            onClick={() => {
+              setLocalRange(undefined);
+              if (data.length)
+                onRangeChange?.(
+                  String(data[0].time),
+                  String(data.at(-1)!.time),
+                );
+            }}
+          >
+            Reset time range
+          </Button>
+        </div>
+      )}
       {data.length ? (
         <div className="chart-frame">
           <ResponsiveContainer
@@ -110,7 +143,7 @@ export function TimeSeries({
             height="100%"
             initialDimension={{ width: 600, height: 260 }}
           >
-            <LineChart
+            <Plot
               data={data}
               accessibilityLayer
               margin={{ top: 15, right: 24, bottom: 4, left: 4 }}
@@ -132,20 +165,37 @@ export function TimeSeries({
                 labelFormatter={(v) => new Date(String(v)).toLocaleString()}
                 formatter={(v) => [`${v ?? "Unknown"} ${unit}`]}
               />
-              {series.map((s, i) => (
-                <Line
-                  key={s.id}
-                  dataKey={s.id}
-                  name={s.label}
-                  stroke={s.color || colors[i % colors.length]}
-                  strokeWidth={2}
-                  dot={false}
-                  activeDot={{ r: 4 }}
-                  hide={hidden.includes(s.id)}
-                  connectNulls={false}
-                  isAnimationActive={!reduce}
-                />
-              ))}
+              {series.map((s, i) =>
+                variant === "line" ? (
+                  <Line
+                    key={s.id}
+                    dataKey={s.id}
+                    name={s.label}
+                    stroke={s.color || colors[i % colors.length]}
+                    strokeWidth={2}
+                    dot={false}
+                    activeDot={{ r: 4 }}
+                    hide={hidden.includes(s.id)}
+                    connectNulls={false}
+                    isAnimationActive={!reduce}
+                    animationDuration={350}
+                  />
+                ) : (
+                  <Area
+                    key={s.id}
+                    dataKey={s.id}
+                    name={s.label}
+                    hide={hidden.includes(s.id)}
+                    stackId={variant === "stacked-area" ? "total" : undefined}
+                    stroke={s.color || colors[i % colors.length]}
+                    fill={s.color || colors[i % colors.length]}
+                    fillOpacity={0.2}
+                    connectNulls={false}
+                    isAnimationActive={!reduce}
+                    animationDuration={350}
+                  />
+                ),
+              )}
               {annotations.map((a) => (
                 <ReferenceLine
                   key={a.time}
@@ -162,19 +212,39 @@ export function TimeSeries({
               <Brush
                 ariaLabel={`Select time range for ${label}. Use arrow keys to adjust.`}
                 dataKey="time"
+                startIndex={
+                  activeRange
+                    ? Math.max(
+                        0,
+                        data.findIndex(
+                          (d) => String(d.time) >= activeRange.start,
+                        ),
+                      )
+                    : 0
+                }
+                endIndex={
+                  activeRange
+                    ? Math.max(
+                        0,
+                        data.filter((d) => String(d.time) <= activeRange.end)
+                          .length - 1,
+                      )
+                    : data.length - 1
+                }
                 height={22}
                 stroke="var(--color-border)"
                 fill="var(--color-panel)"
                 tickFormatter={formatTime}
                 onChange={(r) => {
-                  if (r.startIndex !== undefined && r.endIndex !== undefined)
-                    onRangeChange?.(
-                      String(data[r.startIndex].time),
-                      String(data[r.endIndex].time),
-                    );
+                  if (r.startIndex !== undefined && r.endIndex !== undefined) {
+                    const start = String(data[r.startIndex].time),
+                      end = String(data[r.endIndex].time);
+                    if (onRangeChange) onRangeChange(start, end);
+                    else setLocalRange({ start, end });
+                  }
                 }}
               />
-            </LineChart>
+            </Plot>
           </ResponsiveContainer>
         </div>
       ) : (
@@ -189,10 +259,12 @@ export function Breakdown({
   categories,
   unit = "",
   onSelect,
+  selectedId,
 }: {
   title?: string;
   categories: Category[];
   unit?: string;
+  selectedId?: string;
   onSelect?: (id: string) => void;
 }) {
   const [share, setShare] = useState(false);
@@ -218,6 +290,7 @@ export function Breakdown({
           key={c.id}
           type="button"
           className="breakdown-row"
+          aria-pressed={selectedId === c.id}
           disabled={!onSelect}
           onClick={() => onSelect?.(c.id)}
         >
@@ -244,10 +317,12 @@ export function Distribution({
   unit = "",
   percentiles = {},
   onSelect,
+  selectedId,
 }: {
   bins: HistogramBin[];
   unit?: string;
   percentiles?: Record<string, number>;
+  selectedId?: string;
   onSelect?: (bin: HistogramBin) => void;
 }) {
   const reduce = useReducedMotion();
@@ -266,6 +341,7 @@ export function Distribution({
             <XAxis dataKey="label" minTickGap={20} />
             <YAxis width={35} />
             <ChartTooltip
+              cursor={false}
               contentStyle={{
                 background: "var(--color-panel)",
                 border: "1px solid var(--color-border)",
@@ -275,11 +351,34 @@ export function Distribution({
               dataKey="count"
               fill="var(--color-accent)"
               isAnimationActive={!reduce}
+              animationDuration={350}
+              cursor={onSelect ? "pointer" : undefined}
               onClick={(_, i) => onSelect?.(validBins[i])}
-            />
+            >
+              {validBins.map((bin) => (
+                <Cell
+                  key={bin.label}
+                  opacity={!selectedId || selectedId === bin.label ? 1 : 0.25}
+                />
+              ))}
+            </Bar>
           </BarChart>
         </ResponsiveContainer>
       </div>
+      {onSelect && (
+        <div className="chart-options">
+          {validBins.map((bin) => (
+            <Button
+              key={bin.label}
+              variant="quiet"
+              aria-pressed={selectedId === bin.label}
+              onClick={() => onSelect(bin)}
+            >
+              {bin.label}: {bin.count}
+            </Button>
+          ))}
+        </div>
+      )}
       <div className="toolbar">
         {Object.entries(percentiles).map(([key, value]) => (
           <Badge key={key}>
@@ -297,11 +396,13 @@ export function Heatmap({
   columns,
   cells,
   onSelect,
+  selectedId,
 }: {
   title?: string;
   rows: string[];
   columns: string[];
   cells: HeatCell[];
+  selectedId?: string;
   onSelect?: (cell: HeatCell) => void;
 }) {
   const max = Math.max(1, ...cells.map((c) => c.value ?? 0));
@@ -332,6 +433,7 @@ export function Heatmap({
                   <Button
                     key={column}
                     className="heat-cell"
+                    aria-pressed={selectedId === row + ":" + column}
                     style={{
                       background:
                         cell.value === null
@@ -351,7 +453,7 @@ export function Heatmap({
         </div>
       </div>
       <small className="muted">
-        Lower intensity → higher value · “—” means no data
+        Higher intensity → higher value · “—” means no data
       </small>
     </Panel>
   );
@@ -359,8 +461,10 @@ export function Heatmap({
 export function Funnel({
   steps,
   onSelect,
+  selectedId,
 }: {
   steps: Category[];
+  selectedId?: string;
   onSelect?: (id: string) => void;
 }) {
   const max = Math.max(1, ...steps.map((s) => s.value));
@@ -371,6 +475,7 @@ export function Funnel({
           key={step.id}
           type="button"
           className="funnel-step"
+          aria-pressed={selectedId === step.id}
           disabled={!onSelect}
           onClick={() => onSelect?.(step.id)}
           style={{ width: `${50 + (Math.max(0, step.value) / max) * 50}%` }}

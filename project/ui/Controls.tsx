@@ -1,5 +1,6 @@
 import {
   useId,
+  useRef,
   useState,
   useEffect,
   type ReactNode,
@@ -271,11 +272,13 @@ export function Checkbox({
   checked,
   onChange,
   disabled,
+  hideLabel = false,
 }: {
   label: string;
   checked: boolean;
   onChange: (value: boolean) => void;
   disabled?: boolean;
+  hideLabel?: boolean;
 }) {
   const id = useId();
   return (
@@ -287,11 +290,11 @@ export function Checkbox({
         onCheckedChange={(v) => onChange(v === true)}
         disabled={disabled}
       >
-        <RCheckbox.Indicator>
+        <RCheckbox.Indicator className="ui-checkbox-indicator">
           <Check size={14} />
         </RCheckbox.Indicator>
       </RCheckbox.Root>
-      {label}
+      <span className={hideLabel ? "sr-only" : undefined}>{label}</span>
     </label>
   );
 }
@@ -372,11 +375,30 @@ export function Dialog({
   wide?: boolean;
 }) {
   const descriptionId = useId();
+  const content = useRef<HTMLDivElement>(null);
+  const opener = useRef<HTMLElement | null>(null);
   return (
     <RDialog.Root open={open} onOpenChange={onOpenChange}>
       <RDialog.Portal>
         <RDialog.Overlay className="ui-overlay" />
         <RDialog.Content
+          ref={content}
+          onOpenAutoFocus={(event) => {
+            opener.current =
+              document.activeElement instanceof HTMLElement
+                ? document.activeElement
+                : null;
+            // Announce the dialog before its controls; focusing Close would open
+            // its tooltip and make Escape dismiss the tooltip instead.
+            event.preventDefault();
+            content.current?.focus();
+          }}
+          onCloseAutoFocus={(event) => {
+            if (opener.current?.isConnected) {
+              event.preventDefault();
+              opener.current.focus();
+            }
+          }}
           className={`ui-dialog ${wide ? "dialog-wide" : ""}`}
           aria-describedby={description ? descriptionId : undefined}
         >

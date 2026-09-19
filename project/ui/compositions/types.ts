@@ -1,6 +1,7 @@
 import type { Item } from "@cobalt-code/dashboard";
 import type { Series, Category, HistogramBin, HeatCell } from "../Charts";
 import type {
+  ProgressCheck,
   ActivityEvent,
   Milestone,
   NarrativeSection,
@@ -9,6 +10,12 @@ import type {
 import type { SourceStatus } from "../Layout";
 import type { LogEvent } from "../DataViews";
 export type DashboardData = {
+  analysis?: {
+    records: import("./ChartExplorer").ChartRecord[];
+    measureLabel: string;
+    comparisonLabel: string;
+    unit: string;
+  };
   configured: boolean;
   mode?: "records" | "connected";
   items?: Item[];
@@ -19,6 +26,11 @@ export type DashboardData = {
     unit?: string;
     change?: string;
     trend?: number[];
+    drilldown?: { label: string } & (
+      | { itemIds: string[] }
+      | { itemId: string }
+      | { fields: Record<string, unknown> }
+    );
   }[];
   trends?: Series[];
   trendUnit?: string;
@@ -39,7 +51,7 @@ export type DashboardData = {
     current: number | null;
     target: number;
     unit?: string;
-    checks?: { id: string; label: string; done: boolean }[];
+    checks?: ProgressCheck[];
   };
   events?: LogEvent[];
   eventsDatasetKey?: string;

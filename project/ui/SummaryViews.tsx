@@ -1,7 +1,15 @@
 import { useState } from "react";
+import { Collapsible } from "radix-ui";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Panel, Badge, SourceLink } from "./Layout";
-import { Button, Dialog, Select, type Tone } from "./Controls";
+import {
+  Button,
+  Dialog,
+  Select,
+  Checkbox,
+  Notice,
+  type Tone,
+} from "./Controls";
 export type ActivityEvent = {
   id: string;
   title: string;
@@ -117,113 +125,71 @@ export function StatusMatrix({
     </Panel>
   );
 }
-export type Milestone = {
+export { MilestoneTimeline, type Milestone } from "./MilestoneTimeline";
+export type ProgressCheck = {
   id: string;
-  title: string;
-  start: string;
-  end: string;
+  label: string;
+  done: boolean;
   owner?: string;
-  blocked?: boolean;
-  dependencies?: string[];
+  detail?: string;
+  url?: string;
 };
-export function MilestoneTimeline({
-  items,
-  onSelect,
-}: {
-  items: Milestone[];
-  onSelect?: (id: string) => void;
-}) {
-  const [zoom, setZoom] = useState("fit");
-  const valid = items.filter(
-      (i) =>
-        Number.isFinite(Date.parse(i.start)) &&
-        Number.isFinite(Date.parse(i.end)) &&
-        Date.parse(i.end) >= Date.parse(i.start),
-    ),
-    start = Math.min(...valid.map((i) => Date.parse(i.start))),
-    end = Math.max(...valid.map((i) => Date.parse(i.end))),
-    span = Math.max(86400000, end - start);
-  return (
-    <Panel
-      title="Milestones & dependencies"
-      actions={
-        <Select
-          label="Timeline zoom"
-          value={zoom}
-          onChange={setZoom}
-          options={[
-            { value: "fit", label: "Fit schedule" },
-            { value: "detail", label: "Detailed" },
-          ]}
-        />
-      }
-    >
-      <div className="timeline-scroll">
-        <div style={{ minWidth: zoom === "detail" ? 1000 : 400 }}>
-          {valid.map((item) => (
-            <div className="milestone-row" key={item.id}>
-              <Button
-                variant="quiet"
-                disabled={!onSelect}
-                onClick={() => onSelect?.(item.id)}
-              >
-                {item.title}
-              </Button>
-              <div className="milestone-track">
-                <button
-                  className={`milestone-bar ${item.blocked ? "blocked" : ""}`}
-                  style={{
-                    left: `${((Date.parse(item.start) - start) / span) * 85}%`,
-                    width: `${Math.max(6, ((Date.parse(item.end) - Date.parse(item.start)) / span) * 85)}%`,
-                  }}
-                  onClick={() => onSelect?.(item.id)}
-                  disabled={!onSelect}
-                  aria-label={`${item.title}: ${item.start} to ${item.end}${item.blocked ? ", blocked" : ""}`}
-                >
-                  <span>{item.owner}</span>
-                </button>
-              </div>
-              <small className="muted">
-                {item.dependencies?.length
-                  ? `After ${item.dependencies.join(", ")}`
-                  : item.blocked
-                    ? "Blocked"
-                    : "Ready"}
-              </small>
-            </div>
-          ))}
-          {valid.length ? (
-            <div className="table-footer muted">
-              <span>{new Date(start).toLocaleDateString()}</span>
-              <span>{new Date(end).toLocaleDateString()}</span>
-            </div>
-          ) : (
-            <p className="empty-state">No scheduled milestones.</p>
-          )}
-        </div>
-      </div>
-    </Panel>
-  );
-}
 export function ProgressTarget({
   title,
   current,
   target,
   unit = "",
   checks = [],
+  onCheckChange,
 }: {
   title: string;
   current: number | null;
   target: number;
   unit?: string;
-  checks?: { id: string; label: string; done: boolean }[];
+  checks?: ProgressCheck[];
+  onCheckChange?: (id: string, done: boolean) => Promise<void>;
 }) {
+  const [filter, setFilter] = useState("all");
+  const [busy, setBusy] = useState<string>();
+  const [error, setError] = useState("");
+  const pending = checks.filter((c) => !c.done).length;
+  const visible = checks.filter(
+    (c) => filter === "all" || (filter === "passed" ? c.done : !c.done),
+  );
   const ratio =
     current === null || target <= 0
       ? null
       : Math.min(100, Math.max(0, (current / target) * 100));
+  async function update(check: ProgressCheck, done: boolean) {
+    if (!onCheckChange || busy) return;
+    setBusy(check.id);
+    setError("");
+    try {
+      await onCheckChange(check.id, done);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusy(undefined);
+    }
+  }
   return (
-    <Panel title={title}>
+    <Panel
+      title={title}
+      actions={
+        checks.length ? (
+          <Select
+            label="Check status"
+            value={filter}
+            onChange={setFilter}
+            options={[
+              { value: "all", label: `All checks (${checks.length})` },
+              { value: "pending", label: `Pending (${pending})` },
+              { value: "passed", label: `Passed (${checks.length - pending})` },
+            ]}
+          />
+        ) : undefined
+      }
+    >
       <p className="large-number">
         {current ?? "—"} / {target} <small>{unit}</small>
       </p>
@@ -241,14 +207,62 @@ export function ProgressTarget({
       ) : (
         <p className="muted">Progress unavailable</p>
       )}
-      {checks.map((c) => (
-        <div key={c.id} className="status-row">
-          <span>{c.label}</span>
-          <Badge tone={c.done ? "success" : "warning"}>
-            {c.done ? "Passed" : "Pending"}
-          </Badge>
-        </div>
-      ))}
+      {error && <Notice tone="danger">{error}</Notice>}
+      <div className="progress-checks">
+        {visible.map((c) => (
+          <Collapsible.Root
+            key={c.id}
+            className="check-collapsible"
+            aria-busy={busy === c.id || undefined}
+          >
+            <Collapsible.Trigger asChild>
+              <button
+                type="button"
+                className="check-details"
+                aria-label={`Inspect ${c.label}`}
+              >
+                <ChevronRight
+                  size={15}
+                  className="check-chevron"
+                  aria-hidden="true"
+                />
+                <span className="progress-check-label">
+                  {c.label}
+                  {c.owner && <small className="muted">{c.owner}</small>}
+                </span>
+                <Badge tone={c.done ? "success" : "warning"}>
+                  {busy === c.id ? "Saving…" : c.done ? "Passed" : "Pending"}
+                </Badge>
+              </button>
+            </Collapsible.Trigger>
+            <Collapsible.Content className="check-content">
+              <div className="check-content-inner">
+                <p>{c.detail || "No additional details supplied."}</p>
+                <p className="muted">Owner: {c.owner || "Unassigned"}</p>
+                <div className="toolbar check-actions">
+                  {onCheckChange && (
+                    <Checkbox
+                      label={`Mark ${c.label} as passed`}
+                      checked={c.done}
+                      disabled={!!busy}
+                      onChange={(done) => void update(c, done)}
+                    />
+                  )}
+                  <SourceLink url={c.url}>Open source</SourceLink>
+                </div>
+              </div>
+            </Collapsible.Content>
+          </Collapsible.Root>
+        ))}
+        {!visible.length && !!checks.length && (
+          <p className="empty-state">No {filter} checks.</p>
+        )}
+      </div>
+      {!!checks.length && checks.length < target && (
+        <p className="muted">
+          Showing {checks.length} of {target} checks.
+        </p>
+      )}
     </Panel>
   );
 }

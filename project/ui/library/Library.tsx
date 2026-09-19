@@ -405,7 +405,7 @@ export default function Library() {
                   ],
                   [
                     "Useful interaction",
-                    "Board movement and undo, table sorting and pagination, chart inspection and range selection, record details and source links.",
+                    "Summary cards filter contributing records or open useful details, with hover, focus and selected states. Board movement and undo, table sorting, chart inspection, record details and source links.",
                   ],
                   [
                     "Clear actions",

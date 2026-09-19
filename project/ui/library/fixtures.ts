@@ -1,3 +1,4 @@
+import { chartFixture } from "./chartFixtures";
 import type { Item } from "@cobalt-code/dashboard";
 import type { DashboardData } from "../compositions/types";
 import type { DashboardKind } from "../compositions/catalog";
@@ -26,6 +27,14 @@ export function fixture(kind: DashboardKind, range = "24h"): DashboardData {
     columns = ["08", "10", "12", "14", "16", "18", "20"];
   const data: DashboardData = {
     configured: true,
+    analysis: ["service", "cost", "analytics", "impact"].includes(kind)
+      ? {
+          records: chartFixture(),
+          measureLabel: "Usage",
+          comparisonLabel: "Baseline",
+          unit: "units",
+        }
+      : undefined,
     mode: "connected",
     items,
     columns: ["To do", "In progress", "Done"],
@@ -166,12 +175,33 @@ export function fixture(kind: DashboardKind, range = "24h"): DashboardData {
     ],
     progress: {
       title: "Release checks",
-      current: 12,
-      target: 14,
+      current: 1,
+      target: 3,
       checks: [
-        { id: "integration", label: "Integration suite", done: true },
-        { id: "load", label: "Load test", done: false },
-        { id: "approval", label: "API approval", done: false },
+        {
+          id: "integration",
+          label: "Integration suite",
+          done: true,
+          owner: "Maya",
+          detail:
+            "All integration scenarios passed against the release candidate.",
+        },
+        {
+          id: "load",
+          label: "Load test",
+          done: false,
+          owner: "Luca",
+          detail:
+            "Run the release candidate at peak traffic and verify the latency target before rollout.",
+        },
+        {
+          id: "approval",
+          label: "API approval",
+          done: false,
+          owner: "Aisha",
+          detail:
+            "Confirm the API contract and migration plan with the release owner.",
+        },
       ],
     },
     events: Array.from({ length: 24 }, (_, i) => ({
@@ -200,6 +230,9 @@ export function fixture(kind: DashboardKind, range = "24h"): DashboardData {
   if (kind === "reviews") {
     data.items = Array.from({ length: 14 }, (_, i) => ({
       id: "#" + (284 - i),
+      reviewRequested: i % 3 === 0,
+      ageDays: 14 - i,
+      inactiveDays: i,
       title: [
         "Add dashboard runtime",
         "Retry failed dataset queries",
@@ -215,16 +248,11 @@ export function fixture(kind: DashboardKind, range = "24h"): DashboardData {
       assignee: ["Maya", "Luca", "Aisha"][i % 3],
       project: ["Frontend", "Runtime", "SDK"][i % 3],
     }));
-    data.metrics = [
-      { label: "Awaiting review", value: 14 },
-      { label: "Assigned to you", value: 3 },
-      { label: "Checks failing", value: 4 },
-      { label: "Median wait", value: "4.2 h" },
-    ];
+    data.metrics = reviewMetrics(data.items);
   }
   if (kind === "release")
     data.metrics = [
-      { label: "Readiness", value: "86%" },
+      { label: "Readiness", value: "33%" },
       { label: "Open blockers", value: 2 },
       { label: "PRs merged", value: 34 },
       { label: "Target", value: "7 days" },
@@ -301,5 +329,88 @@ export function fixture(kind: DashboardKind, range = "24h"): DashboardData {
     }));
     data.annotations = [];
   }
+  data.metrics = data.metrics?.map((metric) => ({
+    ...metric,
+    drilldown:
+      metric.drilldown ||
+      (data.mode === "records"
+        ? {
+            label: `Show ${metric.label === "Completion" ? "completed" : metric.label.toLowerCase()} cards`,
+            itemIds: items
+              .filter(
+                (i) =>
+                  i.status ===
+                  (metric.label === "Completion" ? "Done" : metric.label),
+              )
+              .map((i) => i.id),
+          }
+        : {
+            label: "Inspect observation and source",
+            fields: {
+              Value: metric.value,
+              Unit: metric.unit || "As displayed",
+              Comparison: metric.change || "No comparison supplied",
+              Scope: dashboardsScope(kind),
+              "Time window": range,
+              "Observed at": data.updatedAt,
+              Source: "Illustrative library data",
+            },
+          }),
+  }));
   return data;
+}
+
+function dashboardsScope(kind: DashboardKind) {
+  return (
+    (
+      {
+        cost: "Production cloud services",
+        customers: "Customer accounts",
+        analytics: "Product usage",
+      } as Partial<Record<DashboardKind, string>>
+    )[kind] || "Sample workspace"
+  );
+}
+export function reviewMetrics(
+  items: Item[],
+): NonNullable<DashboardData["metrics"]> {
+  const group = (label: string, rows: Item[]) => ({
+    label,
+    value: rows.length,
+    drilldown: {
+      label: `Show ${label.toLowerCase()}`,
+      itemIds: rows.map((i) => i.id),
+    },
+  });
+  const oldest = [...items].sort(
+    (a, b) => Number(b.ageDays) - Number(a.ageDays),
+  )[0];
+  return [
+    group(
+      "Awaiting your review",
+      items.filter((i) => i.reviewRequested === true),
+    ),
+    group(
+      "Blocked",
+      items.filter(
+        (i) =>
+          i.status === "Checks failing" || i.status === "Changes requested",
+      ),
+    ),
+    group(
+      "Stale",
+      items.filter((i) => Number(i.inactiveDays) >= 7),
+    ),
+    {
+      label: "Oldest PR",
+      value: oldest ? Number(oldest.ageDays) : null,
+      unit: "days",
+      drilldown: oldest
+        ? { label: "Open oldest pull request", itemId: oldest.id }
+        : {
+            label: "Inspect empty scope",
+            fields: { Scope: "No pull requests match the current filters." },
+          },
+    },
+  ];
 }

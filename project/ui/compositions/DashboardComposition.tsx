@@ -1,3 +1,5 @@
+import { ChartExplorer } from "./ChartExplorer";
+import { Button } from "../Controls";
 import { useState } from "react";
 import { type Item } from "@cobalt-code/dashboard";
 import { Metric, Panel, SourceFreshness, SourceLink, Badge } from "../Layout";
@@ -17,6 +19,7 @@ import {
   Narrative,
   RecordDetail,
   type DetailRecord,
+  type Milestone,
 } from "../SummaryViews";
 import { WorkBoard, type BoardMove } from "../Board";
 import type { DashboardKind } from "./catalog";
@@ -43,6 +46,8 @@ export function DashboardComposition({
   onMove,
   onEdit,
   onRetry,
+  onCheckChange,
+  onMilestoneChange,
 }: {
   kind: DashboardKind;
   data: DashboardData;
@@ -51,18 +56,27 @@ export function DashboardComposition({
   onMove?: (change: BoardMove) => Promise<void>;
   onEdit?: (item: Item) => void;
   onRetry?: () => void;
+  onMilestoneChange?: (item: Milestone) => Promise<void>;
+  onCheckChange?: (id: string, done: boolean) => Promise<void>;
 }) {
   const [detail, setDetail] = useState<DetailRecord>();
+  const [metricFilter, setMetricFilter] = useState<string>();
+  const activeMetric = data.metrics?.find((m) => m.label === metricFilter);
+  const drilldown = activeMetric?.drilldown;
+  const selectedIds =
+    drilldown && "itemIds" in drilldown ? drilldown.itemIds : undefined;
   const inspect = (
     id: string,
     title: string,
     fields: Record<string, unknown>,
     url?: string,
   ) => setDetail({ id, title, fields, url });
-  const items = (data.items || []).filter((i) =>
-    `${i.id} ${i.title} ${i.assignee ?? ""} ${i.project ?? ""}`
-      .toLowerCase()
-      .includes(query.toLowerCase()),
+  const items = (data.items || []).filter(
+    (i) =>
+      (selectedIds === undefined || selectedIds.includes(i.id)) &&
+      `${i.id} ${i.title} ${i.assignee ?? ""} ${i.project ?? ""}`
+        .toLowerCase()
+        .includes(query.toLowerCase()),
   );
   const lanes = [
     ...new Set([
@@ -237,6 +251,7 @@ export function DashboardComposition({
     timeline: () => (
       <MilestoneTimeline
         items={data.milestones || []}
+        onChange={onMilestoneChange}
         onSelect={(id) => {
           const e = data.milestones?.find((e) => e.id === id);
           if (e) inspect(id, e.title, e);
@@ -245,7 +260,7 @@ export function DashboardComposition({
     ),
     progress: () =>
       data.progress ? (
-        <ProgressTarget {...data.progress} />
+        <ProgressTarget {...data.progress} onCheckChange={onCheckChange} />
       ) : (
         <Panel title="Progress">
           <p className="empty-state">No target configured.</p>
@@ -258,10 +273,43 @@ export function DashboardComposition({
   return (
     <>
       <div className="metric-grid">
-        {data.metrics?.map((m) => (
-          <Metric key={m.label} {...m} />
-        ))}
+        {data.metrics?.map((m) =>
+          m.drilldown ? (
+            <Metric
+              key={m.label}
+              {...m}
+              actionLabel={m.drilldown.label}
+              selected={
+                "itemIds" in m.drilldown ? m.label === metricFilter : undefined
+              }
+              onSelect={() => {
+                const target = m.drilldown!;
+                if ("itemIds" in target)
+                  setMetricFilter(
+                    m.label === metricFilter ? undefined : m.label,
+                  );
+                else if ("itemId" in target) {
+                  const item = data.items?.find((i) => i.id === target.itemId);
+                  if (item) openItem(item);
+                } else inspect(`metric:${m.label}`, m.label, target.fields);
+              }}
+            />
+          ) : (
+            <Metric key={m.label} {...m} />
+          ),
+        )}
       </div>
+      {selectedIds !== undefined && (
+        <div className="toolbar metric-filter">
+          <span role="status">
+            {activeMetric!.label} · {items.length} matching records
+            {data.complete === false ? " · Partial results" : ""}
+          </span>
+          <Button variant="quiet" onClick={() => setMetricFilter(undefined)}>
+            Clear metric filter
+          </Button>
+        </div>
+      )}
       <div className="composition-grid">
         {compositionPanels[kind].map((key) => (
           <div
@@ -283,6 +331,20 @@ export function DashboardComposition({
           </div>
         ))}
       </div>
+      {data.analysis && (
+        <ChartExplorer
+          {...data.analysis}
+          initialView={
+            kind === "cost"
+              ? "treemap"
+              : kind === "analytics"
+                ? "funnel"
+                : kind === "impact"
+                  ? "area"
+                  : "scatter"
+          }
+        />
+      )}
       <SourceFreshness
         sources={data.sources || []}
         onRetry={onRetry ? () => onRetry() : undefined}
