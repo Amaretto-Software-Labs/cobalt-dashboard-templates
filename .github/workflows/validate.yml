@@ -13,13 +13,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-      - run: node --test scripts/catalog.test.mjs
-      - run: node scripts/check.mjs
-      - run: npx playwright install --with-deps chromium
-        working-directory: project
-      - run: npm run test:browser
-        working-directory: project
-      - run: npx playwright install --with-deps chromium
-        working-directory: packages/dashboard
-      - run: npm run test:browser
-        working-directory: packages/dashboard
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm test

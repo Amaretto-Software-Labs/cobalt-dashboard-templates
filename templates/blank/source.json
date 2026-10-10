@@ -1,0 +1,6 @@
+{
+  "dashboard.json": "{\n  \"format\": \"cobalt.openui\",\n  \"version\": 1\n}",
+  "view.openui": "root = Dashboard(\"Dashboard\", [])",
+  "datasets.json": "[]",
+  "source-bindings.json": "[]"
+}
