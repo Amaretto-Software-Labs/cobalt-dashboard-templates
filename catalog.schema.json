@@ -1,0 +1,526 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "RecordAction": {
+      "$ref": "#/$defs/RecordAction"
+    },
+    "DatasetAction": {
+      "$ref": "#/$defs/DatasetAction"
+    },
+    "Layout": {
+      "$ref": "#/$defs/Layout"
+    },
+    "Text": {
+      "$ref": "#/$defs/Text"
+    },
+    "DatasetMetric": {
+      "$ref": "#/$defs/DatasetMetric"
+    },
+    "DatasetTimeSeries": {
+      "$ref": "#/$defs/DatasetTimeSeries"
+    },
+    "DatasetSelectSearch": {
+      "$ref": "#/$defs/DatasetSelectSearch"
+    },
+    "DatasetDetail": {
+      "$ref": "#/$defs/DatasetDetail"
+    },
+    "SourceFreshness": {
+      "$ref": "#/$defs/SourceFreshness"
+    },
+    "Dashboard": {
+      "$ref": "#/$defs/Dashboard"
+    },
+    "DatasetFilter": {
+      "$ref": "#/$defs/DatasetFilter"
+    },
+    "DatasetChart": {
+      "$ref": "#/$defs/DatasetChart"
+    },
+    "DatasetTable": {
+      "$ref": "#/$defs/DatasetTable"
+    }
+  },
+  "required": [
+    "RecordAction",
+    "DatasetAction",
+    "Layout",
+    "Text",
+    "DatasetMetric",
+    "DatasetTimeSeries",
+    "DatasetSelectSearch",
+    "DatasetDetail",
+    "SourceFreshness",
+    "Dashboard",
+    "DatasetFilter",
+    "DatasetChart",
+    "DatasetTable"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "RecordAction": {
+      "type": "object",
+      "properties": {
+        "actionKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "input": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "maxLength": 128
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/__schema0"
+          }
+        }
+      },
+      "required": [
+        "actionKey",
+        "label",
+        "input"
+      ],
+      "additionalProperties": false,
+      "description": "Request a trusted-host confirmation for a declared local-record action with bounded literal input. Never executes while rendering."
+    },
+    "__schema0": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/__schema0"
+          }
+        },
+        {
+          "type": "object",
+          "propertyNames": {
+            "type": "string"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/__schema0"
+          }
+        }
+      ]
+    },
+    "DatasetAction": {
+      "type": "object",
+      "properties": {
+        "dataset": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+        },
+        "selectionKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_]*$"
+        },
+        "actionKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "recordIdField": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+        },
+        "versionField": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+        },
+        "valueFields": {
+          "maxItems": 32,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+          }
+        }
+      },
+      "required": [
+        "dataset",
+        "selectionKey",
+        "actionKey",
+        "label",
+        "recordIdField",
+        "versionField",
+        "valueFields"
+      ],
+      "additionalProperties": false,
+      "description": "Request a declared action on the selected authorized record, mapping recordId, expectedVersion and optional values. The host confirms every write."
+    },
+    "Layout": {
+      "type": "object",
+      "properties": {
+        "columns": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4
+        },
+        "children": {
+          "maxItems": 100,
+          "type": "array",
+          "items": {}
+        }
+      },
+      "required": [
+        "columns",
+        "children"
+      ],
+      "additionalProperties": false,
+      "description": "Responsive Cobalt column layout with child components."
+    },
+    "Text": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "body": {
+          "type": "string",
+          "maxLength": 10000
+        }
+      },
+      "required": [
+        "title",
+        "body"
+      ],
+      "additionalProperties": false,
+      "description": "Plain text narrative; no HTML or executable markup."
+    },
+    "DatasetMetric": {
+      "type": "object",
+      "properties": {
+        "dataset": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "filterKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_]*$"
+        },
+        "field": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+        },
+        "aggregation": {
+          "type": "string",
+          "enum": [
+            "count",
+            "sum",
+            "average",
+            "min",
+            "max"
+          ]
+        },
+        "unit": {
+          "type": "string",
+          "maxLength": 32
+        }
+      },
+      "required": [
+        "dataset",
+        "label",
+        "filterKey",
+        "field",
+        "aggregation",
+        "unit"
+      ],
+      "additionalProperties": false,
+      "description": "A numeric aggregate from a host-authorized typed field and shared project filter."
+    },
+    "DatasetTimeSeries": {
+      "type": "object",
+      "properties": {
+        "dataset": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "filterKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_]*$"
+        },
+        "timeField": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+        },
+        "valueField": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+        },
+        "seriesField": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+        },
+        "unit": {
+          "type": "string",
+          "maxLength": 32
+        }
+      },
+      "required": [
+        "dataset",
+        "label",
+        "filterKey",
+        "timeField",
+        "valueField",
+        "seriesField",
+        "unit"
+      ],
+      "additionalProperties": false,
+      "description": "Cobalt time series using declared time, numeric value and series fields."
+    },
+    "DatasetSelectSearch": {
+      "type": "object",
+      "properties": {
+        "dataset": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "searchKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_]*$"
+        },
+        "selectionKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_]*$"
+        }
+      },
+      "required": [
+        "dataset",
+        "label",
+        "searchKey",
+        "selectionKey"
+      ],
+      "additionalProperties": false,
+      "description": "Search records and update the shared record selection."
+    },
+    "DatasetDetail": {
+      "type": "object",
+      "properties": {
+        "dataset": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+        },
+        "selectionKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_]*$"
+        },
+        "fields": {
+          "minItems": 1,
+          "maxItems": 32,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+          }
+        }
+      },
+      "required": [
+        "dataset",
+        "selectionKey",
+        "fields"
+      ],
+      "additionalProperties": false,
+      "description": "Read-only selected record details from declared fields."
+    },
+    "SourceFreshness": {
+      "type": "object",
+      "properties": {
+        "datasets": {
+          "minItems": 1,
+          "maxItems": 100,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+          }
+        }
+      },
+      "required": [
+        "datasets"
+      ],
+      "additionalProperties": false,
+      "description": "Host-observed readiness and freshness of authorized datasets."
+    },
+    "Dashboard": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "children": {
+          "type": "array",
+          "items": {}
+        }
+      },
+      "required": [
+        "title",
+        "children"
+      ],
+      "additionalProperties": false,
+      "description": "Cobalt dashboard layout with a title and child components."
+    },
+    "DatasetFilter": {
+      "type": "object",
+      "properties": {
+        "dataset": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+        },
+        "stateKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_]*$"
+        }
+      },
+      "required": [
+        "dataset",
+        "stateKey"
+      ],
+      "additionalProperties": false,
+      "description": "Shared project filter for a host-authorized dataset."
+    },
+    "DatasetChart": {
+      "type": "object",
+      "properties": {
+        "dataset": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+        },
+        "filterKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_]*$"
+        },
+        "selectionKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_]*$"
+        }
+      },
+      "required": [
+        "dataset",
+        "filterKey",
+        "selectionKey"
+      ],
+      "additionalProperties": false,
+      "description": "Dataset breakdown. Selecting a record links to the table."
+    },
+    "DatasetTable": {
+      "type": "object",
+      "properties": {
+        "dataset": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_-]*$"
+        },
+        "filterKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_]*$"
+        },
+        "selectionKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z][a-zA-Z0-9_]*$"
+        }
+      },
+      "required": [
+        "dataset",
+        "filterKey",
+        "selectionKey"
+      ],
+      "additionalProperties": false,
+      "description": "Dataset records filtered by shared project state and chart selection."
+    }
+  }
+}
